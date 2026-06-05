@@ -9,7 +9,7 @@ def site_settings(request):
     if request.user.is_authenticated:
         try:
             cart = request.user.cart
-            cart_items = cart.items.select_related("medicine").all()
+            cart_items = cart.items.select_related("medicine", "medicine__category").all()
             cart_count = cart.total_items
             cart_total = cart.total_price
         except Cart.DoesNotExist:

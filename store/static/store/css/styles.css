@@ -39,6 +39,11 @@ body {
     -webkit-font-smoothing: antialiased;
 }
 
+body.drawer-open {
+    overflow: hidden;
+    touch-action: none;
+}
+
 button, input, select, textarea {
     font: inherit;
 }
@@ -323,7 +328,8 @@ button, input, select, textarea {
 .drawer-backdrop {
     position: absolute;
     inset: 0;
-    background: rgba(15, 23, 42, 0.45);
+    z-index: 1;
+    background: rgba(15, 23, 42, 0.25);
     opacity: 0;
     transition: opacity 0.25s ease;
 }
@@ -332,14 +338,24 @@ button, input, select, textarea {
     position: absolute;
     top: 0;
     right: 0;
-    width: min(420px, 100%);
+    z-index: 2;
+    width: min(420px, 100vw);
+    max-width: 100%;
     height: 100%;
-    background: #fff;
+    height: 100dvh;
+    background: #ffffff;
+    color: var(--text);
     transform: translateX(100%);
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     flex-direction: column;
-    box-shadow: var(--shadow-lg);
+    box-shadow: -8px 0 32px rgba(15, 23, 42, 0.12);
+}
+
+.drawer-header,
+.drawer-body,
+.drawer-footer {
+    background: #ffffff;
 }
 
 .cart-drawer.open .drawer-backdrop,
@@ -558,7 +574,10 @@ button, input, select, textarea {
     border-color: var(--primary);
 }
 
-.page-content { min-height: calc(100vh - 7rem); }
+.page-content {
+    min-height: calc(100vh - 7rem);
+    padding-bottom: 1rem;
+}
 
 /* ── Hero ── */
 .hero-section {
@@ -1277,23 +1296,119 @@ button, input, select, textarea {
 @media (max-width: 767px) {
     .topbar .action-bar { gap: 0.5rem; }
 
-    .search-input-group button { right: 0.35rem; }
+    .topbar .container-fluid {
+        flex-wrap: nowrap;
+    }
 
-    .drawer-item { grid-template-columns: 64px 1fr auto; }
+    .search-bar-wrapper {
+        display: none !important;
+    }
+
+    .search-input-group input {
+        font-size: 1rem;
+        padding-right: 5.5rem;
+    }
+
+    .search-input-group button {
+        right: 0.35rem;
+        font-size: 0.8rem;
+        padding: 0.35rem 0.85rem;
+    }
+
+    .search-dropdown {
+        max-height: 60vh;
+        overflow-y: auto;
+    }
+
+    .toast-container {
+        top: auto;
+        bottom: 5.5rem;
+        left: 1rem;
+        right: 1rem;
+        max-width: none;
+    }
+
+    .drawer-content {
+        width: 100%;
+        border-radius: 0;
+    }
+
+    .drawer-item {
+        grid-template-columns: 56px 1fr;
+        grid-template-rows: auto auto;
+    }
+
+    .drawer-remove {
+        grid-column: 2;
+        justify-self: start;
+        font-size: 0.8rem;
+    }
+
+    .drawer-item-image {
+        width: 56px;
+        height: 56px;
+    }
+
+    .page-content {
+        padding-bottom: 5.5rem;
+    }
 
     .hero-stats { gap: 1.25rem; }
 
     .hero-stat strong { font-size: 1.25rem; }
 
-    .filter-card { position: static; margin-bottom: 1rem; }
+    .hero-title { font-size: 1.75rem; }
 
-    .product-card-actions .btn span { display: none !important; }
+    .hero-search-form .btn {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .filter-card {
+        position: static;
+        margin-bottom: 0;
+    }
+
+    .filter-toggle-btn {
+        font-weight: 600;
+    }
+
+    .product-card-actions {
+        flex-direction: row;
+    }
+
+    .product-card-actions .btn {
+        min-height: 40px;
+        font-size: 0.75rem;
+    }
+
+    .product-title {
+        font-size: 0.85rem;
+    }
+
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .listing-hero h2 {
+        font-size: 1.35rem;
+    }
+
+    .listing-hero .search-form {
+        flex-direction: column;
+    }
+
+    .listing-hero .search-form .btn {
+        width: 100%;
+    }
 
     .profile-nav {
         position: static;
         flex-direction: row;
         overflow-x: auto;
         flex-wrap: nowrap;
+        -webkit-overflow-scrolling: touch;
     }
 
     .profile-nav-link {
@@ -1306,10 +1421,33 @@ button, input, select, textarea {
         width: 80px;
         height: 80px;
     }
+
+    .cart-item-card {
+        flex-direction: column;
+    }
+
+    .action-bar .btn-icon {
+        min-width: 40px;
+        min-height: 40px;
+    }
+}
+
+@media (max-width: 575px) {
+    .product-card-actions .product-view-btn {
+        flex: 0.4 !important;
+    }
 }
 
 @media (min-width: 768px) {
     .bottom-search .search-input-group input {
         padding-right: 6rem;
+    }
+}
+
+@media (min-width: 992px) {
+    #mobileFilters.collapse {
+        display: block !important;
+        visibility: visible !important;
+        height: auto !important;
     }
 }

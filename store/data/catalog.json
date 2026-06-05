@@ -1,0 +1,111 @@
+{
+  "site_settings": {
+    "whatsapp_number": "+919109445782",
+    "support_email": "support@farmos.com",
+    "support_phone": "+91 91094 45782"
+  },
+  "categories": [
+    {
+      "name": "Pain Relief",
+      "slug": "pain-relief",
+      "image": "https://images.unsplash.com/photo-1584308664944-24d5c474f2ae?auto=format&fit=crop&w=400&h=400&q=80"
+    },
+    {
+      "name": "Fever & Cold",
+      "slug": "fever-cold",
+      "image": "https://images.unsplash.com/photo-1587854692152-cf660aba24e1?auto=format&fit=crop&w=400&h=400&q=80"
+    },
+    {
+      "name": "Diabetes",
+      "slug": "diabetes",
+      "image": "https://images.unsplash.com/photo-1576765607927-8be9425e6314?auto=format&fit=crop&w=400&h=400&q=80"
+    },
+    {
+      "name": "Heart Care",
+      "slug": "heart-care",
+      "image": "https://images.unsplash.com/photo-1559757143-5cec350e0c68?auto=format&fit=crop&w=400&h=400&q=80"
+    },
+    {
+      "name": "Vitamins",
+      "slug": "vitamins",
+      "image": "https://images.unsplash.com/photo-1607613009820-a29f7bb81c04?auto=format&fit=crop&w=400&h=400&q=80"
+    },
+    {
+      "name": "Skin Care",
+      "slug": "skin-care",
+      "image": "https://images.unsplash.com/photo-1556228720-4b0c6043cc3d?auto=format&fit=crop&w=400&h=400&q=80"
+    },
+    {
+      "name": "Personal Care",
+      "slug": "personal-care",
+      "image": "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=400&h=400&q=80"
+    },
+    {
+      "name": "Ayurveda",
+      "slug": "ayurveda",
+      "image": "https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?auto=format&fit=crop&w=400&h=400&q=80"
+    }
+  ],
+  "medicines": [
+    {
+      "name": "Paracetamol 500mg",
+      "slug": "paracetamol-500mg",
+      "category": "pain-relief",
+      "description": "Fast-acting pain reliever and fever reducer.",
+      "manufacturer": "HealthCare Labs",
+      "image": "https://images.unsplash.com/photo-1584308664944-24d5c474f2ae?auto=format&fit=crop&w=600&h=450&q=80",
+      "price": 49.0,
+      "stock_quantity": 120,
+      "prescription_required": false,
+      "is_featured": true
+    },
+    {
+      "name": "Dolo 650mg",
+      "slug": "dolo-650mg",
+      "category": "pain-relief",
+      "description": "Trusted paracetamol tablet for fever and body pain.",
+      "manufacturer": "Sun Pharma",
+      "image": "https://images.unsplash.com/photo-1550572017-edd226aa80ed?auto=format&fit=crop&w=600&h=450&q=80",
+      "price": 95.0,
+      "stock_quantity": 80,
+      "prescription_required": false,
+      "is_featured": true
+    },
+    {
+      "name": "Cetaphil Gentle Skin Cleanser",
+      "slug": "cetaphil-gentle-skin-cleanser",
+      "category": "skin-care",
+      "description": "Gentle cleanser for dry and sensitive skin.",
+      "manufacturer": "Galderma",
+      "image": "https://images.unsplash.com/photo-1556228720-4b0c6043cc3d?auto=format&fit=crop&w=600&h=450&q=80",
+      "price": 450.0,
+      "stock_quantity": 35,
+      "prescription_required": false,
+      "is_featured": true
+    },
+    {
+      "name": "Vitamin C 500mg",
+      "slug": "vitamin-c-500mg",
+      "category": "vitamins",
+      "description": "Immune support chewable tablets.",
+      "manufacturer": "Himalaya",
+      "image": "https://images.unsplash.com/photo-1607613009820-a29f7bb81c04?auto=format&fit=crop&w=600&h=450&q=80",
+      "price": 70.0,
+      "stock_quantity": 200,
+      "prescription_required": false,
+      "is_featured": true
+    },
+    {
+      "name": "Chyawanprash",
+      "slug": "chyawanprash",
+      "category": "ayurveda",
+      "description": "Ayurvedic immunity booster with herbs and amla.",
+      "manufacturer": "Dabur",
+      "image": "https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?auto=format&fit=crop&w=600&h=450&q=80",
+      "price": 285.0,
+      "stock_quantity": 60,
+      "prescription_required": false,
+      "is_featured": true
+    }
+  ]
+}

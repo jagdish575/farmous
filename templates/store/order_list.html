@@ -20,6 +20,7 @@
                             </div>
                             <span class="badge badge-status {% if order.status == 'pending' %}bg-warning text-dark{% elif order.status == 'confirmed' %}bg-info text-dark{% elif order.status == 'processing' %}bg-primary{% elif order.status == 'delivered' %}bg-success{% else %}bg-danger{% endif %}">{{ order.get_status_display }}</span>
                         </div>
+                        <p class="mb-1 small text-muted"><i class="fas fa-phone-alt me-1"></i> {{ order.user.mobile_number }}</p>
                         <p class="mb-2">Items: <strong>{{ order.total_items }}</strong></p>
                         <p class="mb-3">Total: <strong>₹{{ order.total_price|floatformat:2 }}</strong></p>
                         <a class="btn btn-outline-primary btn-sm" href="{% url 'store:order_detail' order.pk %}">View details</a>

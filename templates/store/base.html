@@ -17,7 +17,7 @@
     <link rel="stylesheet" href="{% static 'store/css/styles.css' %}" />
     {% block extra_head %}{% endblock %}
 </head>
-<body>
+<body {% if request.user.is_authenticated %}data-auth="1"{% endif %}>
     <header class="topbar sticky-top">
         <div class="container-fluid px-3 py-2 py-md-3 d-flex align-items-center justify-content-between gap-3">
             <div class="brand-bar d-flex align-items-center gap-2 gap-md-3">
@@ -71,6 +71,7 @@
     <div id="toastContainer" class="toast-container"></div>
 
     <div class="cart-drawer" id="cartDrawer">
+        <div class="drawer-backdrop" id="drawerBackdrop"></div>
         <div class="drawer-content">
             <div class="drawer-header">
                 <div>
@@ -116,7 +117,6 @@
                 </div>
             </div>
         </div>
-        <div class="drawer-backdrop" id="drawerBackdrop"></div>
     </div>
 
     <main class="page-content">

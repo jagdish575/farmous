@@ -22,9 +22,12 @@
 </section>
 
 <section class="container py-4 py-md-5">
+    <button class="btn btn-outline-primary w-100 rounded-pill d-lg-none mb-3 filter-toggle-btn" type="button" data-bs-toggle="collapse" data-bs-target="#mobileFilters" aria-expanded="false">
+        <i class="fas fa-sliders me-2"></i> Filters & Sort
+    </button>
     <div class="row g-4">
         <aside class="col-lg-3">
-            <div class="filter-card">
+            <div class="filter-card collapse d-lg-block" id="mobileFilters">
                 <h5><i class="fas fa-sliders text-primary"></i> Filters</h5>
                 <form action="" method="get" class="mt-4">
                     {% if query %}<input type="hidden" name="q" value="{{ query }}" />{% endif %}

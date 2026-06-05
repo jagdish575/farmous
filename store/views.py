@@ -23,6 +23,28 @@ def get_cart(user):
     cart, created = Cart.objects.get_or_create(user=user)
     return cart
 
+DEFAULT_MEDICINE_IMAGE = (
+    "https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=200&q=80"
+)
+
+def serialize_cart(cart):
+    items = []
+    for item in cart.items.select_related("medicine", "medicine__category"):
+        items.append({
+            "id": item.id,
+            "medicine_name": item.medicine.name,
+            "category": item.medicine.category.name,
+            "image": item.medicine.image or DEFAULT_MEDICINE_IMAGE,
+            "price": float(item.price),
+            "quantity": item.quantity,
+            "item_total": float(item.total_price),
+        })
+    return {
+        "cart_count": cart.total_items,
+        "cart_total": float(cart.total_price),
+        "items": items,
+    }
+
 def home(request):
     categories = Category.objects.all()[:6]
     featured = Medicine.objects.filter(is_active=True, is_featured=True).order_by("name")[:8]
@@ -122,14 +144,16 @@ def add_to_cart(request, medicine_id):
         item.quantity = item.quantity + quantity
         item.save()
     if request.headers.get("x-requested-with") == "XMLHttpRequest":
-        return JsonResponse({
-            "success": True,
-            "medicine_name": medicine.name,
-            "cart_count": cart.total_items,
-            "cart_total": float(cart.total_price),
-        })
+        payload = serialize_cart(cart)
+        payload.update({"success": True, "medicine_name": medicine.name})
+        return JsonResponse(payload)
     messages.success(request, f"{medicine.name} has been added to your cart.")
     return redirect(request.META.get("HTTP_REFERER", reverse("store:cart")))
+
+@login_required
+def cart_api(request):
+    cart = get_cart(request.user)
+    return JsonResponse(serialize_cart(cart))
 
 @login_required
 def cart_view(request):
@@ -148,11 +172,9 @@ def update_cart_item(request, item_id):
         item.save()
     cart = get_cart(request.user)
     if request.headers.get("x-requested-with") == "XMLHttpRequest":
-        return JsonResponse({
-            "item_total": float(item.quantity * item.price) if item.pk else 0,
-            "cart_total": float(cart.total_price),
-            "cart_count": cart.total_items,
-        })
+        payload = serialize_cart(cart)
+        payload["item_total"] = float(item.quantity * item.price) if item.pk else 0
+        return JsonResponse(payload)
     return redirect(reverse("store:cart"))
 
 @login_required
@@ -161,10 +183,7 @@ def remove_cart_item(request, item_id):
     item.delete()
     cart = get_cart(request.user)
     if request.headers.get("x-requested-with") == "XMLHttpRequest":
-        return JsonResponse({
-            "cart_total": float(cart.total_price),
-            "cart_count": cart.total_items,
-        })
+        return JsonResponse(serialize_cart(cart))
     return redirect(reverse("store:cart"))
 
 @login_required
@@ -187,6 +206,9 @@ def address_form(request, pk=None):
             return redirect("store:address_list")
     else:
         form = AddressForm(instance=address)
+        if address is None:
+            form.initial.setdefault("mobile_number", request.user.mobile_number)
+            form.initial.setdefault("full_name", request.user.full_name)
     return render(request, "store/address_form.html", {"form": form, "address": address})
 
 @login_required
@@ -199,6 +221,9 @@ def place_order(request):
     if address is None:
         messages.warning(request, "Please add your delivery address before placing an order.")
         return redirect("store:address_list")
+    if address.mobile_number != request.user.mobile_number:
+        address.mobile_number = request.user.mobile_number
+        address.save(update_fields=["mobile_number"])
     order = Order.objects.create(user=request.user, address=address)
     for item in cart.items.all():
         OrderItem.objects.create(
@@ -265,6 +290,9 @@ def cancel_order(request, pk):
 
 @login_required
 def profile(request):
+    request.user.addresses.exclude(mobile_number=request.user.mobile_number).update(
+        mobile_number=request.user.mobile_number
+    )
     addresses = request.user.addresses.all()
     form = ProfileForm(instance=request.user)
     settings_form = NotificationSettingsForm(instance=request.user)
@@ -280,7 +308,10 @@ def profile(request):
         else:
             form = ProfileForm(request.POST, instance=request.user)
             if form.is_valid():
-                form.save()
+                old_mobile = request.user.mobile_number
+                user = form.save()
+                if user.mobile_number != old_mobile:
+                    user.addresses.update(mobile_number=user.mobile_number)
                 messages.success(request, "Profile updated successfully.")
                 return redirect("store:profile")
 

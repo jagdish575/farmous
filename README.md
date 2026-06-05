@@ -56,11 +56,25 @@ python manage.py migrate
 python manage.py createsuperuser
 ```
 
-6. Load sample data:
+6. Load sample data (24 medicines, 8 categories, product photos):
 
 ```bash
-python manage.py seed_store
+python manage.py load_dummy_data --reset
 ```
+
+Or use the shorter alias:
+
+```bash
+python manage.py seed_store --reset
+```
+
+**Easy-edit JSON** (add your own products/photos): edit `store/data/catalog.json`, then run:
+
+```bash
+python manage.py load_dummy_data --format catalog --reset
+```
+
+**Full fixture file** (Django format): `store/fixtures/dummy_data.json`
 
 7. Start the development server:
 

@@ -29,17 +29,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const drawerOpen = document.getElementById('drawerCartOpen');
     const drawerClose = document.getElementById('drawerClose');
     const drawerBackdrop = document.getElementById('drawerBackdrop');
-    const drawerToggle = document.getElementById('drawerToggle');
+    const isAuthenticated = document.body.dataset.auth === '1';
+    const defaultImage = 'https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=200&q=80';
 
-    const openDrawer = () => drawer?.classList.add('open');
-    const closeDrawer = () => drawer?.classList.remove('open');
+    const openDrawer = () => {
+        drawer?.classList.add('open');
+        document.body.classList.add('drawer-open');
+    };
+    const closeDrawer = () => {
+        drawer?.classList.remove('open');
+        document.body.classList.remove('drawer-open');
+    };
 
-    drawerOpen?.addEventListener('click', openDrawer);
+    drawerOpen?.addEventListener('click', () => {
+        openDrawer();
+        if (isAuthenticated) refreshDrawer();
+    });
     drawerClose?.addEventListener('click', closeDrawer);
     drawerBackdrop?.addEventListener('click', closeDrawer);
-    drawerToggle?.addEventListener('click', () => {
-        document.body.classList.toggle('nav-open');
-    });
 
     /* ── Mobile nav active state ── */
     const currentPath = window.location.pathname;
@@ -67,8 +74,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         return activeSearchState.get(input);
     };
-
-    const defaultImage = 'https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=200&q=80';
 
     const renderSearchResults = (data, dropdown, input) => {
         if (!dropdown) return;
@@ -256,6 +261,24 @@ document.addEventListener('DOMContentLoaded', () => {
             <a href="/search/" class="btn btn-primary btn-sm rounded-pill">Browse medicines</a>
         </div>`;
 
+    const buildDrawerItemHtml = (item) => `
+        <div class="drawer-item" data-item-id="${item.id}" data-unit-price="${item.price}">
+            <div class="drawer-item-image" style="background-image:url('${item.image || defaultImage}')"></div>
+            <div class="drawer-item-details">
+                <h6>${item.medicine_name}</h6>
+                <p class="text-muted small mb-1">${item.category}</p>
+                <p class="small fw-semibold mb-2">₹<span class="item-total">${item.item_total.toFixed(2)}</span>
+                    <span class="text-muted fw-normal">(₹<span class="item-unit-price">${item.price.toFixed(2)}</span> × <span class="quantity-value">${item.quantity}</span>)</span>
+                </p>
+                <div class="quantity-control">
+                    <button class="quantity-btn" data-action="decrement" aria-label="Decrease">−</button>
+                    <span class="quantity-value">${item.quantity}</span>
+                    <button class="quantity-btn" data-action="increment" aria-label="Increase">+</button>
+                </div>
+            </div>
+            <button class="btn btn-link drawer-remove p-0" data-item-id="${item.id}">Remove</button>
+        </div>`;
+
     const updateCartDisplay = (count, total) => {
         document.querySelectorAll('.counter, .bottom-badge').forEach((badge) => {
             badge.textContent = count;
@@ -286,6 +309,36 @@ document.addEventListener('DOMContentLoaded', () => {
         if (drawerFooter) {
             drawerFooter.style.display = 'none';
         }
+    };
+
+    const renderDrawerItems = (data) => {
+        const drawerBody = document.getElementById('drawerBody');
+        const drawerFooter = document.getElementById('drawerFooter');
+        if (!drawerBody || !data) return;
+
+        updateCartDisplay(data.cart_count, data.cart_total);
+
+        if (!data.items || !data.items.length) {
+            showDrawerEmpty();
+            return;
+        }
+
+        drawerBody.innerHTML = data.items.map(buildDrawerItemHtml).join('');
+        if (drawerFooter) {
+            drawerFooter.style.display = '';
+        }
+    };
+
+    const refreshDrawer = async () => {
+        if (!isAuthenticated) return;
+        try {
+            const response = await fetch('/api/cart/', {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            });
+            if (!response.ok) return;
+            const data = await response.json();
+            renderDrawerItems(data);
+        } catch { /* ignore */ }
     };
 
     const postJson = async (url, data) => {
@@ -345,15 +398,15 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!response.ok) return;
         const data = await response.json();
         updateItemElements(itemId, quantity, data.item_total);
-        updateCartDisplay(data.cart_count, data.cart_total);
+        renderDrawerItems(data);
     };
 
     const removeItem = async (itemId) => {
         const response = await postJson(`/cart/remove/${itemId}/`, {});
         if (!response.ok) return;
         const data = await response.json();
-        updateCartDisplay(data.cart_count, data.cart_total);
         removeCartItemElements(itemId);
+        renderDrawerItems(data);
         showToast('Item removed from cart', 'info');
     };
 
@@ -378,17 +431,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 if (!response.ok) throw new Error('Failed');
                 const data = await response.json();
-                updateCartDisplay(data.cart_count, data.cart_total);
+                renderDrawerItems(data);
                 showToast(`${medicineName} added to cart`, 'success');
+                openDrawer();
                 quickAdd.innerHTML = '<i class="fas fa-check"></i>';
                 window.setTimeout(() => {
                     quickAdd.classList.remove('loading');
-                    quickAdd.innerHTML = '<i class="fas fa-cart-plus"></i><span class="d-none d-sm-inline">Add</span>';
+                    quickAdd.innerHTML = '<i class="fas fa-cart-plus"></i><span>Add</span>';
                 }, 1500);
             } catch {
                 showToast('Could not add to cart. Please try again.', 'error');
                 quickAdd.classList.remove('loading');
-                quickAdd.innerHTML = '<i class="fas fa-cart-plus"></i><span class="d-none d-sm-inline">Add</span>';
+                quickAdd.innerHTML = '<i class="fas fa-cart-plus"></i><span>Add</span>';
             }
             return;
         }
