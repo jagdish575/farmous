@@ -1,0 +1,71 @@
+{% extends "store/base.html" %}
+{% block title %}{{ medicine.name }} - FarmOS{% endblock %}
+{% block content %}
+<section class="product-hero py-4 py-md-5">
+    <div class="container">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb small">
+                <li class="breadcrumb-item"><a href="{% url 'store:home' %}">Home</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'store:medicine_list' %}?category={{ medicine.category.slug }}">{{ medicine.category.name }}</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ medicine.name }}</li>
+            </ol>
+        </nav>
+        <div class="row g-4">
+            <div class="col-lg-6">
+                <div class="product-display overflow-hidden">
+                    <img src="{{ medicine.image|default:'https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=900&q=80' }}" alt="{{ medicine.name }}" class="img-fluid w-100" loading="lazy" style="min-height:360px;object-fit:cover" />
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="product-details p-4 h-100 d-flex flex-column">
+                    <div class="d-flex align-items-center gap-2 mb-3 flex-wrap">
+                        <span class="badge bg-primary-soft text-primary">{{ medicine.category.name }}</span>
+                        <span class="stock-chip {% if medicine.in_stock %}in-stock{% else %}out-of-stock{% endif %}">
+                            {% if medicine.in_stock %}In stock{% else %}Out of stock{% endif %}
+                        </span>
+                        {% if medicine.prescription_required %}
+                            <span class="badge bg-warning text-dark"><i class="fas fa-file-prescription"></i> Rx Required</span>
+                        {% endif %}
+                    </div>
+                    <h1>{{ medicine.name }}</h1>
+                    {% if medicine.manufacturer %}
+                        <p class="text-muted">by <strong>{{ medicine.manufacturer }}</strong></p>
+                    {% endif %}
+                    <div class="d-flex align-items-end gap-3 my-3">
+                        <div class="price-display">
+                            <small class="text-muted d-block">MRP</small>
+                            <h2>₹{{ medicine.price }}</h2>
+                        </div>
+                    </div>
+                    <p class="mb-4 text-secondary">{{ medicine.description|default:'No description available for this product yet.' }}</p>
+                    <div class="product-meta mb-4 p-3 rounded-3 bg-soft">
+                        <div class="d-flex justify-content-between small">
+                            <span class="text-muted">Prescription required</span>
+                            <strong>{{ medicine.prescription_required|yesno:'Yes,No' }}</strong>
+                        </div>
+                        <div class="d-flex justify-content-between small mt-2">
+                            <span class="text-muted">Available stock</span>
+                            <strong>{{ medicine.stock_quantity }} units</strong>
+                        </div>
+                    </div>
+                    {% if medicine.in_stock %}
+                    <form action="{% url 'store:add_to_cart' medicine.id %}" method="post" class="d-flex flex-column flex-sm-row align-items-stretch align-items-sm-center gap-3 mt-auto">
+                        {% csrf_token %}
+                        <div class="quantity-selector">
+                            <button type="button" class="quantity-btn quantity-step" data-action="decrement">−</button>
+                            <input type="number" name="quantity" class="form-control border-0 bg-transparent quantity-input" value="1" min="1" max="{{ medicine.stock_quantity }}" />
+                            <button type="button" class="quantity-btn quantity-step" data-action="increment">+</button>
+                        </div>
+                        <button class="btn btn-primary btn-lg flex-fill rounded-pill" type="submit">
+                            <i class="fas fa-cart-plus me-1"></i> Add to cart
+                        </button>
+                    </form>
+                    {% else %}
+                    <button class="btn btn-secondary btn-lg rounded-pill mt-auto" disabled>Currently unavailable</button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

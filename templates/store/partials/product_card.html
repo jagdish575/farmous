@@ -1,0 +1,43 @@
+<article class="product-card h-100" data-medicine-id="{{ medicine.id }}">
+    <a href="{{ medicine.get_absolute_url }}" class="product-card-link">
+        <div class="product-image-wrap">
+            <div class="product-image" style="background-image:url('{{ medicine.image|default:'https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=600&q=80' }}')" loading="lazy"></div>
+            {% if show_category %}
+                <span class="product-category-badge">{{ medicine.category.name }}</span>
+            {% endif %}
+            {% if medicine.prescription_required %}
+                <span class="product-rx-badge" title="Prescription required"><i class="fas fa-file-prescription"></i></span>
+            {% endif %}
+            <span class="stock-chip {% if medicine.in_stock %}in-stock{% else %}out-of-stock{% endif %}">
+                {% if medicine.in_stock %}In stock{% else %}Out of stock{% endif %}
+            </span>
+        </div>
+        <div class="product-card-body">
+            <h5 class="product-title">{{ medicine.name }}</h5>
+            {% if medicine.manufacturer %}
+                <p class="product-manufacturer">{{ medicine.manufacturer }}</p>
+            {% endif %}
+            <div class="product-price-row">
+                <span class="product-price">₹{{ medicine.price }}</span>
+            </div>
+        </div>
+    </a>
+    <div class="product-card-actions">
+        <a href="{{ medicine.get_absolute_url }}" class="btn btn-outline-primary btn-sm product-view-btn">View</a>
+        {% if medicine.in_stock %}
+            {% if request.user.is_authenticated %}
+                <button type="button" class="btn btn-primary btn-sm quick-add-btn" data-medicine-id="{{ medicine.id }}" data-medicine-name="{{ medicine.name }}">
+                    <i class="fas fa-cart-plus"></i>
+                    <span class="d-none d-sm-inline">Add</span>
+                </button>
+            {% else %}
+                <a href="{% url 'store:login' %}?next={{ medicine.get_absolute_url }}" class="btn btn-primary btn-sm">
+                    <i class="fas fa-cart-plus"></i>
+                    <span class="d-none d-sm-inline">Add</span>
+                </a>
+            {% endif %}
+        {% else %}
+            <button type="button" class="btn btn-secondary btn-sm" disabled>Unavailable</button>
+        {% endif %}
+    </div>
+</article>

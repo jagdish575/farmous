@@ -1,0 +1,11 @@
+<a href="{% url 'store:medicine_list' %}?category={{ category.slug }}" class="category-card">
+    <div class="category-icon">
+        {% if category.image %}
+            <img src="{{ category.image }}" alt="{{ category.name }}" loading="lazy" />
+        {% else %}
+            <span>{{ category.name|slice:"0:1" }}</span>
+        {% endif %}
+    </div>
+    <span class="category-name">{{ category.name }}</span>
+    <span class="category-arrow"><i class="fas fa-arrow-right"></i></span>
+</a>

@@ -1,0 +1,211 @@
+{% extends "store/base.html" %}
+{% block title %}My Account - FarmOS{% endblock %}
+{% block content %}
+<section class="profile-page py-4 py-md-5">
+    <div class="container">
+        <div class="profile-hero rounded-4 p-4 p-md-5 mb-4">
+            <div class="d-flex align-items-center gap-3 gap-md-4">
+                <div class="profile-avatar">{{ request.user.full_name|default:request.user.mobile_number|slice:"0:1"|upper }}</div>
+                <div class="flex-fill">
+                    <h1 class="h3 mb-1 fw-bold">{{ request.user.full_name|default:"Valued Customer" }}</h1>
+                    <p class="text-muted mb-2"><i class="fas fa-phone-alt me-1"></i> {{ request.user.mobile_number }}</p>
+                    <div class="d-flex flex-wrap gap-2">
+                        <span class="profile-stat-badge"><i class="fas fa-box"></i> {{ order_count }} order{{ order_count|pluralize }}</span>
+                        <span class="profile-stat-badge"><i class="fas fa-map-marker-alt"></i> {{ addresses|length }} address{{ addresses|length|pluralize:"es" }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-4">
+                <nav class="profile-nav rounded-4 p-3">
+                    <a href="#personal" class="profile-nav-link active" data-profile-tab="personal">
+                        <i class="fas fa-user"></i> Personal details
+                    </a>
+                    <a href="#addresses" class="profile-nav-link" data-profile-tab="addresses">
+                        <i class="fas fa-map-marker-alt"></i> Delivery addresses
+                    </a>
+                    <a href="#notifications" class="profile-nav-link" data-profile-tab="notifications">
+                        <i class="fas fa-bell"></i> Notifications
+                    </a>
+                    <a href="{% url 'store:order_list' %}" class="profile-nav-link">
+                        <i class="fas fa-box-open"></i> My orders
+                    </a>
+                    <a href="{% url 'store:logout' %}" class="profile-nav-link text-danger">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </nav>
+            </div>
+
+            <div class="col-lg-8">
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-success rounded-3 mb-3">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+
+                <div id="personal" class="profile-panel active">
+                    <article class="profile-card rounded-4 p-4 p-md-5">
+                        <div class="d-flex align-items-center justify-content-between mb-4">
+                            <div>
+                                <h2 class="h5 fw-bold mb-1">Personal details</h2>
+                                <p class="text-muted small mb-0">Update your name and contact number</p>
+                            </div>
+                            <button type="button" class="btn btn-outline-primary btn-sm rounded-pill" id="editProfileBtn">
+                                <i class="fas fa-pen"></i> Edit
+                            </button>
+                        </div>
+                        <form method="post" id="profileForm">
+                            {% csrf_token %}
+                            <input type="hidden" name="form_type" value="profile" />
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <label class="form-label fw-semibold small">Full name</label>
+                                    {{ form.full_name }}
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label fw-semibold small">Mobile number</label>
+                                    {{ form.mobile_number }}
+                                </div>
+                            </div>
+                            <div class="d-none mt-4 gap-2" id="profileFormActions">
+                                <button class="btn btn-primary rounded-pill px-4" type="submit">Save changes</button>
+                                <button class="btn btn-outline-secondary rounded-pill px-4" type="button" id="cancelProfileBtn">Cancel</button>
+                            </div>
+                        </form>
+                    </article>
+                </div>
+
+                <div id="addresses" class="profile-panel">
+                    <article class="profile-card rounded-4 p-4 p-md-5">
+                        <div class="d-flex align-items-center justify-content-between mb-4">
+                            <div>
+                                <h2 class="h5 fw-bold mb-1">Delivery addresses</h2>
+                                <p class="text-muted small mb-0">Manage where your medicines are delivered</p>
+                            </div>
+                            <a href="{% url 'store:address_add' %}" class="btn btn-primary btn-sm rounded-pill">
+                                <i class="fas fa-plus"></i> Add new
+                            </a>
+                        </div>
+                        {% if addresses %}
+                            <div class="d-flex flex-column gap-3">
+                                {% for address in addresses %}
+                                    <div class="address-card rounded-3 p-3 {% if forloop.first %}address-card-primary{% endif %}">
+                                        <div class="d-flex align-items-start justify-content-between gap-3">
+                                            <div class="flex-fill">
+                                                {% if forloop.first %}
+                                                    <span class="badge bg-primary-soft text-primary mb-2">Default</span>
+                                                {% endif %}
+                                                <h6 class="mb-1 fw-bold">{{ address.full_name }}</h6>
+                                                <p class="text-muted small mb-1">{{ address.mobile_number }}</p>
+                                                <p class="mb-1 small">{{ address.address_line }}{% if address.landmark %}, {{ address.landmark }}{% endif %}</p>
+                                                <p class="mb-0 small text-muted">{{ address.city }}, {{ address.state }} — {{ address.pincode }}</p>
+                                            </div>
+                                            <a href="{% url 'store:address_edit' address.pk %}" class="btn btn-outline-primary btn-sm rounded-pill flex-shrink-0">
+                                                <i class="fas fa-pen"></i> Edit
+                                            </a>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="empty-state py-4">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <h4 class="h6">No saved address</h4>
+                                <p class="text-muted small">Add a delivery address to place orders.</p>
+                                <a href="{% url 'store:address_add' %}" class="btn btn-primary btn-sm rounded-pill mt-2">Add address</a>
+                            </div>
+                        {% endif %}
+                    </article>
+                </div>
+
+                <div id="notifications" class="profile-panel">
+                    <article class="profile-card rounded-4 p-4 p-md-5">
+                        <div class="mb-4">
+                            <h2 class="h5 fw-bold mb-1">Notification settings</h2>
+                            <p class="text-muted small mb-0">Choose what updates you want to receive</p>
+                        </div>
+                        <form method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="form_type" value="settings" />
+                            <div class="settings-list">
+                                <div class="setting-item">
+                                    <div>
+                                        <h6 class="mb-1">Order updates</h6>
+                                        <p class="text-muted small mb-0">Get notified about order confirmation, dispatch & delivery</p>
+                                    </div>
+                                    <div class="form-check form-switch">
+                                        {{ settings_form.notify_order_updates }}
+                                    </div>
+                                </div>
+                                <div class="setting-item">
+                                    <div>
+                                        <h6 class="mb-1">Offers & promotions</h6>
+                                        <p class="text-muted small mb-0">Receive deals, discounts and seasonal offers</p>
+                                    </div>
+                                    <div class="form-check form-switch">
+                                        {{ settings_form.notify_promotions }}
+                                    </div>
+                                </div>
+                                <div class="setting-item">
+                                    <div>
+                                        <h6 class="mb-1">Refill reminders</h6>
+                                        <p class="text-muted small mb-0">Reminders when it's time to reorder your medicines</p>
+                                    </div>
+                                    <div class="form-check form-switch">
+                                        {{ settings_form.notify_refill_reminders }}
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary rounded-pill px-4 mt-4" type="submit">Save preferences</button>
+                        </form>
+                    </article>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('profileForm');
+    const inputs = form?.querySelectorAll('input:not([type=hidden])');
+    const editBtn = document.getElementById('editProfileBtn');
+    const cancelBtn = document.getElementById('cancelProfileBtn');
+    const actions = document.getElementById('profileFormActions');
+    let originalValues = {};
+
+    const setReadonly = (readonly) => {
+        inputs?.forEach((input) => {
+            input.readOnly = readonly;
+            input.classList.toggle('profile-readonly', readonly);
+        });
+        actions?.classList.toggle('d-none', readonly);
+        actions?.classList.toggle('d-flex', !readonly);
+        editBtn?.classList.toggle('d-none', !readonly);
+    };
+
+    inputs?.forEach((input) => { originalValues[input.name] = input.value; });
+    setReadonly(true);
+
+    editBtn?.addEventListener('click', () => setReadonly(false));
+    cancelBtn?.addEventListener('click', () => {
+        inputs?.forEach((input) => { input.value = originalValues[input.name] || ''; });
+        setReadonly(true);
+    });
+
+    document.querySelectorAll('[data-profile-tab]').forEach((link) => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const tab = link.dataset.profileTab;
+            document.querySelectorAll('[data-profile-tab]').forEach((l) => l.classList.remove('active'));
+            document.querySelectorAll('.profile-panel').forEach((p) => p.classList.remove('active'));
+            link.classList.add('active');
+            document.getElementById(tab)?.classList.add('active');
+        });
+    });
+});
+</script>
+{% endblock %}

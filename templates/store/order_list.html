@@ -1,0 +1,34 @@
+{% extends "store/base.html" %}
+{% block title %}Your Orders - FarmOS{% endblock %}
+{% block content %}
+<section class="container py-5">
+    <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3 mb-4">
+        <div>
+            <h2>Your orders</h2>
+            <p class="text-muted mb-0">Track your past orders and view order details.</p>
+        </div>
+    </div>
+    {% if orders %}
+        <div class="row g-4">
+            {% for order in orders %}
+                <div class="col-12 col-md-6">
+                    <article class="order-card rounded-4 shadow-sm p-4 h-100">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <div>
+                                <h5 class="mb-1">{{ order.order_id }}</h5>
+                                <p class="text-muted small mb-0">Placed on {{ order.created_at|date:'M j, Y' }}</p>
+                            </div>
+                            <span class="badge badge-status {% if order.status == 'pending' %}bg-warning text-dark{% elif order.status == 'confirmed' %}bg-info text-dark{% elif order.status == 'processing' %}bg-primary{% elif order.status == 'delivered' %}bg-success{% else %}bg-danger{% endif %}">{{ order.get_status_display }}</span>
+                        </div>
+                        <p class="mb-2">Items: <strong>{{ order.total_items }}</strong></p>
+                        <p class="mb-3">Total: <strong>₹{{ order.total_price|floatformat:2 }}</strong></p>
+                        <a class="btn btn-outline-primary btn-sm" href="{% url 'store:order_detail' order.pk %}">View details</a>
+                    </article>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info">You haven't placed any orders yet.</div>
+    {% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends "store/base.html" %}
+{% block title %}{{ order.order_id }} - FarmOS{% endblock %}
+{% block content %}
+<section class="container py-5">
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <article class="order-summary-card rounded-4 shadow-sm p-4 mb-4">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div>
+                        <h2 class="mb-1">{{ order.order_id }}</h2>
+                        <p class="text-muted mb-0">Placed on {{ order.created_at|date:'F j, Y, g:i a' }}</p>
+                    </div>
+                    <span class="badge badge-status {% if order.status == 'pending' %}bg-warning text-dark{% elif order.status == 'confirmed' %}bg-info text-dark{% elif order.status == 'processing' %}bg-primary{% elif order.status == 'delivered' %}bg-success{% else %}bg-danger{% endif %}">{{ order.get_status_display }}</span>
+                </div>
+                <div class="mb-4">
+                    <h5>Delivery address</h5>
+                    <p class="mb-1">{{ order.address.full_name }}</p>
+                    <p class="mb-1">{{ order.address.address_line }}</p>
+                    <p class="mb-1">{{ order.address.city }}, {{ order.address.state }} {{ order.address.pincode }}</p>
+                    <p class="mb-0 text-muted">{{ order.address.mobile_number }}</p>
+                </div>
+            </article>
+            <article class="order-items-card rounded-4 shadow-sm p-4">
+                <h5 class="mb-4">Order items</h5>
+                <div class="list-group list-group-flush">
+                    {% for item in order.items.all %}
+                        <div class="list-group-item px-0 py-3 border-bottom">
+                            <div class="d-flex justify-content-between align-items-center gap-3">
+                                <div>
+                                    <h6 class="mb-1">{{ item.medicine.name }}</h6>
+                                    <p class="text-muted small mb-0">{{ item.medicine.manufacturer }}</p>
+                                </div>
+                                <div class="text-end">
+                                    <p class="mb-1">{{ item.quantity }} x ₹{{ item.price|floatformat:2 }}</p>
+                                    <strong>₹{{ item.total_price|floatformat:2 }}</strong>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </article>
+        </div>
+        <aside class="col-lg-4">
+            <div class="summary-card rounded-4 shadow-sm p-4">
+                <h5>Order summary</h5>
+                <p class="d-flex justify-content-between mb-2"><span>Items</span><strong>{{ order.total_items }}</strong></p>
+                <p class="d-flex justify-content-between mb-4"><span>Total</span><strong>₹{{ order.total_price|floatformat:2 }}</strong></p>
+                {% if order.status in ['pending', 'confirmed'] %}
+                    <a href="{% url 'store:cancel_order' order.pk %}" class="btn btn-danger w-100 rounded-pill">Cancel order</a>
+                {% endif %}
+            </div>
+        </aside>
+    </div>
+</section>
+{% endblock %}

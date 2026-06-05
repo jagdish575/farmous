@@ -1,0 +1,56 @@
+{% extends "store/base.html" %}
+{% block title %}{% if address %}Edit Address{% else %}Add Address{% endif %} - FarmOS{% endblock %}
+{% block content %}
+<section class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <article class="form-card rounded-4 shadow-sm p-5">
+                <h2 class="mb-4">{% if address %}Edit address{% else %}Add delivery address{% endif %}</h2>
+                <form method="post" class="row g-4">
+                    {% csrf_token %}
+                    {{ form.non_field_errors }}
+                    <div class="col-md-6">{{ form.full_name.label_tag }}{{ form.full_name }}</div>
+                    <div class="col-md-6">{{ form.mobile_number.label_tag }}{{ form.mobile_number }}</div>
+                    <div class="col-12">{{ form.address_line.label_tag }}{{ form.address_line }}</div>
+                    <div class="col-md-6">{{ form.landmark.label_tag }}{{ form.landmark }}</div>
+                    <div class="col-md-6">{{ form.city.label_tag }}{{ form.city }}</div>
+                    <div class="col-md-6">{{ form.state.label_tag }}{{ form.state }}</div>
+                    <div class="col-md-6">{{ form.pincode.label_tag }}{{ form.pincode }}</div>
+                    {{ form.latitude }}
+                    {{ form.longitude }}
+                    <div class="col-12 d-flex flex-column flex-sm-row gap-3 mt-3">
+                        <button class="btn btn-primary rounded-pill" type="submit">Save address</button>
+                        <button class="btn btn-outline-secondary rounded-pill" id="useLocationBtn" type="button">Use current location</button>
+                    </div>
+                </form>
+            </article>
+        </div>
+    </div>
+</section>
+{% endblock %}
+{% block extra_scripts %}
+<script>
+const useLocationButton = document.getElementById('useLocationBtn');
+if (useLocationButton) {
+    useLocationButton.addEventListener('click', () => {
+        if (!navigator.geolocation) {
+            alert('Geolocation is not supported by your browser.');
+            return;
+        }
+        useLocationButton.textContent = 'Locating…';
+        navigator.geolocation.getCurrentPosition((position) => {
+            const latField = document.getElementById('id_latitude');
+            const lonField = document.getElementById('id_longitude');
+            if (latField && lonField) {
+                latField.value = position.coords.latitude.toFixed(6);
+                lonField.value = position.coords.longitude.toFixed(6);
+            }
+            useLocationButton.textContent = 'Location added';
+        }, () => {
+            useLocationButton.textContent = 'Use current location';
+            alert('Unable to retrieve your location. Please enter address manually.');
+        });
+    });
+}
+</script>
+{% endblock %}

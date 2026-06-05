@@ -1,0 +1,66 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+{% block title %}FarmOS Admin Dashboard{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <h1>FarmOS Dashboard</h1>
+    <div class="row g-4 mt-4">
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h5>Total Medicines</h5>
+                    <p class="display-6 mb-0">{{ total_medicines }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h5>Total Orders</h5>
+                    <p class="display-6 mb-0">{{ total_orders }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h5>Total Users</h5>
+                    <p class="display-6 mb-0">{{ total_users }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h5>Pending Orders</h5>
+                    <p class="display-6 mb-0">{{ pending_orders }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h5>Delivered Orders</h5>
+                    <p class="display-6 mb-0">{{ delivered_orders }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h5>Cancelled Orders</h5>
+                    <p class="display-6 mb-0">{{ cancelled_orders }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h5>Low Stock Medicines</h5>
+                    <p class="display-6 mb-0">{{ low_stock }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

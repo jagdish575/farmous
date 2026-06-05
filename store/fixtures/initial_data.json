@@ -1,0 +1,278 @@
+[
+  {
+    "model": "store.sitesettings",
+    "pk": 1,
+    "fields": {
+      "whatsapp_number": "+919876543210",
+      "support_email": "support@farmos.com",
+      "support_phone": "+91 98765 43210"
+    }
+  },
+  {
+    "model": "store.category",
+    "pk": 1,
+    "fields": {
+      "name": "Pain Relief",
+      "slug": "pain-relief",
+      "image": "https://images.unsplash.com/photo-1580281657528-560d0c6be23d?auto=format&fit=crop&w=600&q=80"
+    }
+  },
+  {
+    "model": "store.category",
+    "pk": 2,
+    "fields": {
+      "name": "Fever",
+      "slug": "fever",
+      "image": "https://images.unsplash.com/photo-1580281657528-560d0c6be23d?auto=format&fit=crop&w=600&q=80"
+    }
+  },
+  {
+    "model": "store.category",
+    "pk": 3,
+    "fields": {
+      "name": "Diabetes",
+      "slug": "diabetes",
+      "image": "https://images.unsplash.com/photo-1542736667-069246bdbc97?auto=format&fit=crop&w=600&q=80"
+    }
+  },
+  {
+    "model": "store.category",
+    "pk": 4,
+    "fields": {
+      "name": "Heart Care",
+      "slug": "heart-care",
+      "image": "https://images.unsplash.com/photo-1576765607927-8be9425e6314?auto=format&fit=crop&w=600&q=80"
+    }
+  },
+  {
+    "model": "store.category",
+    "pk": 5,
+    "fields": {
+      "name": "Vitamins",
+      "slug": "vitamins",
+      "image": "https://images.unsplash.com/photo-1580281657528-560d0c6be23d?auto=format&fit=crop&w=600&q=80"
+    }
+  },
+  {
+    "model": "store.category",
+    "pk": 6,
+    "fields": {
+      "name": "Skin Care",
+      "slug": "skin-care",
+      "image": "https://images.unsplash.com/photo-1556228720-4b0c6043cc3d?auto=format&fit=crop&w=600&q=80"
+    }
+  },
+  {
+    "model": "store.category",
+    "pk": 7,
+    "fields": {
+      "name": "Personal Care",
+      "slug": "personal-care",
+      "image": "https://images.unsplash.com/photo-1496317556649-f930d733eea2?auto=format&fit=crop&w=600&q=80"
+    }
+  },
+  {
+    "model": "store.medicine",
+    "pk": 1,
+    "fields": {
+      "category": 1,
+      "name": "Paracetamol 500mg",
+      "slug": "paracetamol-500mg",
+      "description": "Fast-acting pain reliever and fever reducer.",
+      "manufacturer": "HealthCare Labs",
+      "image": "https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=600&q=80",
+      "price": "49.00",
+      "stock_quantity": 120,
+      "prescription_required": false,
+      "is_featured": true,
+      "is_active": true
+    }
+  },
+  {
+    "model": "store.medicine",
+    "pk": 2,
+    "fields": {
+      "category": 1,
+      "name": "Dolo 650mg",
+      "slug": "dolo-650mg",
+      "description": "Popular pain management medicine for headaches and body pain.",
+      "manufacturer": "Sun Pharma",
+      "image": "https://images.unsplash.com/photo-1556228720-4b0c6043cc3d?auto=format&fit=crop&w=600&q=80",
+      "price": "95.00",
+      "stock_quantity": 80,
+      "prescription_required": false,
+      "is_featured": true,
+      "is_active": true
+    }
+  },
+  {
+    "model": "store.medicine",
+    "pk": 3,
+    "fields": {
+      "category": 2,
+      "name": "Crocin Advance",
+      "slug": "crocin-advance",
+      "description": "Trusted fever relief tablet with cooling action.",
+      "manufacturer": "GSK",
+      "image": "https://images.unsplash.com/photo-1542736667-069246bdbc97?auto=format&fit=crop&w=600&q=80",
+      "price": "65.00",
+      "stock_quantity": 90,
+      "prescription_required": false,
+      "is_featured": false,
+      "is_active": true
+    }
+  },
+  {
+    "model": "store.medicine",
+    "pk": 4,
+    "fields": {
+      "category": 2,
+      "name": "Disprin",
+      "slug": "disprin",
+      "description": "Effective pain and fever relief medicine.",
+      "manufacturer": "Bayer",
+      "image": "https://images.unsplash.com/photo-1580281657528-560d0c6be23d?auto=format&fit=crop&w=600&q=80",
+      "price": "39.00",
+      "stock_quantity": 140,
+      "prescription_required": false,
+      "is_featured": false,
+      "is_active": true
+    }
+  },
+  {
+    "model": "store.medicine",
+    "pk": 5,
+    "fields": {
+      "category": 3,
+      "name": "Metformin 500mg",
+      "slug": "metformin-500mg",
+      "description": "Oral diabetes medicine for steady blood sugar control.",
+      "manufacturer": "Cipla",
+      "image": "https://images.unsplash.com/photo-1542736667-069246bdbc97?auto=format&fit=crop&w=600&q=80",
+      "price": "120.00",
+      "stock_quantity": 60,
+      "prescription_required": true,
+      "is_featured": true,
+      "is_active": true
+    }
+  },
+  {
+    "model": "store.medicine",
+    "pk": 6,
+    "fields": {
+      "category": 3,
+      "name": "Glycomet-GP",
+      "slug": "glycomet-gp",
+      "description": "Combination diabetes tablet with metformin and glimepiride.",
+      "manufacturer": "Lupin",
+      "image": "https://images.unsplash.com/photo-1576765607927-8be9425e6314?auto=format&fit=crop&w=600&q=80",
+      "price": "180.00",
+      "stock_quantity": 45,
+      "prescription_required": true,
+      "is_featured": false,
+      "is_active": true
+    }
+  },
+  {
+    "model": "store.medicine",
+    "pk": 7,
+    "fields": {
+      "category": 4,
+      "name": "Atenolol 50mg",
+      "slug": "atenolol-50mg",
+      "description": "Heart care medication for blood pressure support.",
+      "manufacturer": "Pfizer",
+      "image": "https://images.unsplash.com/photo-1576765607927-8be9425e6314?auto=format&fit=crop&w=600&q=80",
+      "price": "90.00",
+      "stock_quantity": 70,
+      "prescription_required": true,
+      "is_featured": false,
+      "is_active": true
+    }
+  },
+  {
+    "model": "store.medicine",
+    "pk": 8,
+    "fields": {
+      "category": 4,
+      "name": "Aspirin 75mg",
+      "slug": "aspirin-75mg",
+      "description": "Daily low-dose aspirin for heart wellness.",
+      "manufacturer": "Bayer",
+      "image": "https://images.unsplash.com/photo-1496317556649-f930d733eea2?auto=format&fit=crop&w=600&q=80",
+      "price": "55.00",
+      "stock_quantity": 100,
+      "prescription_required": true,
+      "is_featured": false,
+      "is_active": true
+    }
+  },
+  {
+    "model": "store.medicine",
+    "pk": 9,
+    "fields": {
+      "category": 5,
+      "name": "Vitamin C 500mg",
+      "slug": "vitamin-c-500mg",
+      "description": "Immune support supplement with antioxidants.",
+      "manufacturer": "Himalaya",
+      "image": "https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=600&q=80",
+      "price": "70.00",
+      "stock_quantity": 200,
+      "prescription_required": false,
+      "is_featured": true,
+      "is_active": true
+    }
+  },
+  {
+    "model": "store.medicine",
+    "pk": 10,
+    "fields": {
+      "category": 5,
+      "name": "Zincovit",
+      "slug": "zincovit",
+      "description": "Multivitamin tablets for daily health support.",
+      "manufacturer": "Torrent",
+      "image": "https://images.unsplash.com/photo-1496317556649-f930d733eea2?auto=format&fit=crop&w=600&q=80",
+      "price": "110.00",
+      "stock_quantity": 140,
+      "prescription_required": false,
+      "is_featured": false,
+      "is_active": true
+    }
+  },
+  {
+    "model": "store.medicine",
+    "pk": 11,
+    "fields": {
+      "category": 6,
+      "name": "Cetaphil Gentle Skin Cleanser",
+      "slug": "cetaphil-gentle-skin-cleanser",
+      "description": "Gentle skincare cleanser for sensitive skin.",
+      "manufacturer": "Galderma",
+      "image": "https://images.unsplash.com/photo-1556228720-4b0c6043cc3d?auto=format&fit=crop&w=600&q=80",
+      "price": "450.00",
+      "stock_quantity": 35,
+      "prescription_required": false,
+      "is_featured": true,
+      "is_active": true
+    }
+  },
+  {
+    "model": "store.medicine",
+    "pk": 12,
+    "fields": {
+      "category": 7,
+      "name": "Lifebuoy Handwash",
+      "slug": "lifebuoy-handwash",
+      "description": "Trusted personal care handwash for daily hygiene.",
+      "manufacturer": "Hindustan Unilever",
+      "image": "https://images.unsplash.com/photo-1496317556649-f930d733eea2?auto=format&fit=crop&w=600&q=80",
+      "price": "85.00",
+      "stock_quantity": 170,
+      "prescription_required": false,
+      "is_featured": false,
+      "is_active": true
+    }
+  }
+]

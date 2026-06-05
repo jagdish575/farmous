@@ -1,0 +1,167 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}FarmOS - Modern Medicine Delivery{% endblock %}</title>
+    <meta name="description" content="Order genuine medicines online. Fast search, smart cart, and instant WhatsApp checkout." />
+    <meta property="og:title" content="FarmOS Medicine Delivery" />
+    <meta property="og:description" content="A modern pharmacy experience — search, compare, and order medicines in minutes." />
+    <meta property="og:type" content="website" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="{% static 'store/css/styles.css' %}" />
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <header class="topbar sticky-top">
+        <div class="container-fluid px-3 py-2 py-md-3 d-flex align-items-center justify-content-between gap-3">
+            <div class="brand-bar d-flex align-items-center gap-2 gap-md-3">
+                <a class="brand-link d-flex align-items-center gap-2" href="{% url 'store:home' %}">
+                    <div class="brand-mark">F</div>
+                    <div class="d-none d-sm-block">
+                        <h1>FarmOS</h1>
+                        <p>Modern medicine delivery</p>
+                    </div>
+                </a>
+            </div>
+            <div class="search-bar-wrapper flex-fill d-none d-md-flex align-items-center mx-3">
+                <div class="search-input-group w-100 position-relative">
+                    <i class="fas fa-search search-icon"></i>
+                    <input id="searchInput" type="search" class="form-control form-control-lg rounded-pill" placeholder="Search medicines, brands or categories" autocomplete="off" />
+                    <button class="btn btn-primary rounded-pill px-4" data-search-submit>Search</button>
+                    <div id="searchDropdown" class="search-dropdown d-none"></div>
+                </div>
+            </div>
+            <div class="action-bar d-flex align-items-center gap-2">
+                <a href="{% url 'store:cart' %}" class="btn btn-outline-primary btn-icon position-relative d-none d-md-inline-flex">
+                    <i class="fas fa-shopping-bag"></i>
+                    <span class="badge counter" {% if not cart_count %}style="display:none"{% endif %}>{{ cart_count }}</span>
+                </a>
+                <button id="drawerCartOpen" class="btn btn-primary btn-icon position-relative">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="badge counter" {% if not cart_count %}style="display:none"{% endif %}>{{ cart_count }}</span>
+                </button>
+                {% if request.user.is_authenticated %}
+                    <a href="{% url 'store:profile' %}" class="btn btn-outline-secondary btn-icon d-none d-lg-inline-flex align-items-center gap-2">
+                        <i class="fas fa-user"></i>
+                        <span class="d-none d-xl-inline">{{ request.user.full_name|default:request.user.mobile_number }}</span>
+                    </a>
+                {% else %}
+                    <a href="{% url 'store:login' %}" class="btn btn-outline-secondary btn-icon d-none d-md-inline-flex align-items-center gap-2">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+        <div class="bottom-search d-md-none px-3 pb-3">
+            <div class="search-input-group position-relative">
+                <i class="fas fa-search search-icon"></i>
+                <input id="mobileSearchInput" type="search" class="form-control form-control-lg rounded-pill" placeholder="Search medicines..." autocomplete="off" />
+                <button class="btn btn-primary btn-sm rounded-pill px-3" data-search-submit>Go</button>
+                <div id="mobileSearchDropdown" class="search-dropdown d-none"></div>
+            </div>
+        </div>
+    </header>
+
+    <div id="toastContainer" class="toast-container"></div>
+
+    <div class="cart-drawer" id="cartDrawer">
+        <div class="drawer-content">
+            <div class="drawer-header">
+                <div>
+                    <h3>Your cart</h3>
+                    <p class="text-muted small mb-0" id="drawerItemCount">{{ cart_count }} item{{ cart_count|pluralize }}</p>
+                </div>
+                <button id="drawerClose" class="btn btn-ghost" aria-label="Close cart"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="drawer-body" id="drawerBody">
+                {% if cart_items %}
+                    {% for item in cart_items %}
+                        <div class="drawer-item" data-item-id="{{ item.id }}" data-unit-price="{{ item.price }}">
+                            <div class="drawer-item-image" style="background-image:url('{{ item.medicine.image|default:'https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=200&q=80' }}')"></div>
+                            <div class="drawer-item-details">
+                                <h6>{{ item.medicine.name }}</h6>
+                                <p class="text-muted small mb-1">{{ item.medicine.category.name }}</p>
+                                <p class="small fw-semibold mb-2">₹<span class="item-total">{{ item.total_price|floatformat:2 }}</span> <span class="text-muted fw-normal">(₹<span class="item-unit-price">{{ item.price|floatformat:2 }}</span> × <span class="quantity-value">{{ item.quantity }}</span>)</span></p>
+                                <div class="quantity-control">
+                                    <button class="quantity-btn" data-action="decrement" aria-label="Decrease">−</button>
+                                    <span class="quantity-value">{{ item.quantity }}</span>
+                                    <button class="quantity-btn" data-action="increment" aria-label="Increase">+</button>
+                                </div>
+                            </div>
+                            <button class="btn btn-link drawer-remove p-0" data-item-id="{{ item.id }}">Remove</button>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="drawer-empty" id="drawerEmpty">
+                        <i class="fas fa-shopping-basket"></i>
+                        <p>Your cart is empty.<br>Add medicines to get started.</p>
+                        <a href="{% url 'store:medicine_list' %}" class="btn btn-primary btn-sm rounded-pill">Browse medicines</a>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="drawer-footer" id="drawerFooter" {% if not cart_items %}style="display:none"{% endif %}>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="text-muted">Total</span>
+                    <h4 class="mb-0 drawer-total-amount">₹{{ cart_total|floatformat:2 }}</h4>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="{% url 'store:cart' %}" class="btn btn-outline-secondary flex-fill rounded-pill">View Cart</a>
+                    <a href="{% url 'store:cart' %}" class="btn btn-primary flex-fill rounded-pill">Checkout</a>
+                </div>
+            </div>
+        </div>
+        <div class="drawer-backdrop" id="drawerBackdrop"></div>
+    </div>
+
+    <main class="page-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer d-none d-md-block">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="footer-brand mb-2">FarmOS</div>
+                    <p class="small mb-0">Your trusted online pharmacy. Genuine medicines, fast delivery, and hassle-free WhatsApp ordering.</p>
+                </div>
+                <div class="col-md-4">
+                    <h6>Quick Links</h6>
+                    <div class="d-flex flex-column gap-2">
+                        <a href="{% url 'store:medicine_list' %}">Browse Medicines</a>
+                        <a href="{% url 'store:cart' %}">My Cart</a>
+                        <a href="{% url 'store:order_list' %}">My Orders</a>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <h6>Support</h6>
+                    <div class="d-flex flex-column gap-2">
+                        <a href="{% url 'store:profile' %}">My Profile</a>
+                        <a href="{% url 'store:address_list' %}">Delivery Addresses</a>
+                        <a href="{% url 'store:login' %}">Login / Register</a>
+                    </div>
+                </div>
+            </div>
+            <hr class="border-secondary my-4 opacity-25" />
+            <p class="small text-center mb-0">&copy; 2026 FarmOS. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <nav class="mobile-bottom-nav d-md-none">
+        <a href="{% url 'store:home' %}" class="nav-link"><i class="fas fa-home"></i><span>Home</span></a>
+        <a href="{% url 'store:medicine_list' %}" class="nav-link"><i class="fas fa-capsules"></i><span>Shop</span></a>
+        <a href="{% url 'store:cart' %}" class="nav-link position-relative"><i class="fas fa-shopping-cart"></i><span>Cart</span><span class="bottom-badge" {% if not cart_count %}style="display:none"{% endif %}>{{ cart_count }}</span></a>
+        <a href="{% url 'store:order_list' %}" class="nav-link"><i class="fas fa-box-open"></i><span>Orders</span></a>
+        <a href="{% url 'store:profile' %}" class="nav-link"><i class="fas fa-user"></i><span>Profile</span></a>
+    </nav>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <script src="{% static 'store/js/site.js' %}"></script>
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

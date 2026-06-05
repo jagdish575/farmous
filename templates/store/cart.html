@@ -1,0 +1,76 @@
+{% extends "store/base.html" %}
+{% block title %}Cart - FarmOS{% endblock %}
+{% block content %}
+<section class="cart-page py-4 py-md-5">
+    <div class="container">
+        <div class="mb-4">
+            <h2 class="fw-bold">Your cart</h2>
+            <p class="text-muted mb-0">Update quantities instantly and place your order via WhatsApp.</p>
+        </div>
+
+        {% if cart.items.exists %}
+            <div class="row g-4">
+                <div class="col-lg-8">
+                    <div class="cart-items-list d-flex flex-column gap-3">
+                        {% for item in cart.items.all %}
+                            <div class="cart-item-card rounded-4 p-3 p-md-4 d-flex gap-3 gap-md-4" data-item-id="{{ item.id }}" data-unit-price="{{ item.price }}">
+                                <div class="cart-item-image flex-shrink-0" style="background-image:url('{{ item.medicine.image|default:'https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=400&q=80' }}')"></div>
+                                <div class="cart-item-meta flex-fill min-w-0">
+                                    <div class="d-flex align-items-start justify-content-between gap-2 mb-1">
+                                        <h5 class="mb-0 fs-6 fw-bold">{{ item.medicine.name }}</h5>
+                                        <button class="btn btn-link text-danger p-0 remove-item flex-shrink-0" type="button" data-item-id="{{ item.id }}">Remove</button>
+                                    </div>
+                                    <p class="text-muted small mb-2">{{ item.medicine.manufacturer }}</p>
+                                    <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+                                        <div class="quantity-control">
+                                            <button class="quantity-btn" data-action="decrement" type="button" aria-label="Decrease">−</button>
+                                            <span class="quantity-value">{{ item.quantity }}</span>
+                                            <button class="quantity-btn" data-action="increment" type="button" aria-label="Increase">+</button>
+                                        </div>
+                                        <span class="badge {% if item.medicine.in_stock %}bg-success-soft text-success{% else %}bg-danger-soft text-danger{% endif %}">
+                                            {% if item.medicine.in_stock %}In stock{% else %}Out of stock{% endif %}
+                                        </span>
+                                    </div>
+                                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                                        <span class="text-muted small">₹<span class="item-unit-price">{{ item.price|floatformat:2 }}</span> each</span>
+                                        <span class="fw-bold">Subtotal: ₹<span class="item-total">{{ item.total_price|floatformat:2 }}</span></span>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="summary-card rounded-4 p-4 sticky-top" style="top:5.5rem">
+                        <h5 class="fw-bold mb-4">Order summary</h5>
+                        <div class="summary-details d-flex flex-column gap-2 mb-4">
+                            <div class="d-flex justify-content-between">
+                                <span class="text-muted">Items</span>
+                                <strong class="summary-items-count">{{ cart.total_items }}</strong>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span class="text-muted">Delivery</span>
+                                <strong class="text-success">Free</strong>
+                            </div>
+                            <hr class="my-2" />
+                            <div class="d-flex justify-content-between fs-5">
+                                <span class="fw-semibold">Total</span>
+                                <strong class="summary-total-amount text-primary">₹{{ cart.total_price|floatformat:2 }}</strong>
+                            </div>
+                        </div>
+                        <a href="{% url 'store:place_order' %}" class="btn btn-primary w-100 rounded-pill btn-lg">Place Order</a>
+                        <a href="{% url 'store:medicine_list' %}" class="btn btn-outline-secondary w-100 rounded-pill mt-2">Continue shopping</a>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <i class="fas fa-shopping-cart"></i>
+                <h4>Your cart is empty</h4>
+                <p class="text-muted">Browse medicines and add them to your cart.</p>
+                <a href="{% url 'store:medicine_list' %}" class="btn btn-primary rounded-pill mt-2">Browse medicines</a>
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

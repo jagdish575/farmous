@@ -1,0 +1,146 @@
+{% extends "store/base.html" %}
+{% block title %}FarmOS - Order Medicines Online{% endblock %}
+{% block content %}
+<section class="hero-section py-5">
+    <div class="container">
+        <div class="row align-items-center gy-5">
+            <div class="col-lg-6">
+                <div class="hero-badge"><i class="fas fa-shield-heart"></i> Trusted Online Pharmacy</div>
+                <h2 class="hero-title">Genuine medicines,<br><span>delivered fast.</span></h2>
+                <p class="text-muted mb-4 fs-5">Search 1000+ medicines, compare prices, manage your cart, and place orders via WhatsApp — no payment gateway needed.</p>
+                <form class="hero-search-form" action="{% url 'store:medicine_list' %}" method="get">
+                    <i class="fas fa-search search-icon"></i>
+                    <div class="d-flex gap-2">
+                        <input type="search" name="q" class="form-control form-control-lg rounded-pill flex-fill" placeholder="Search Paracetamol, Cipla, Pain Relief..." autocomplete="off" />
+                        <button class="btn btn-primary btn-lg rounded-pill px-4">Search</button>
+                    </div>
+                </form>
+                <div class="trust-strip">
+                    <div class="trust-item"><i class="fas fa-check-circle"></i> 100% Genuine</div>
+                    <div class="trust-item"><i class="fas fa-truck"></i> Fast Delivery</div>
+                    <div class="trust-item"><i class="fas fa-headset"></i> 24/7 Support</div>
+                </div>
+                <div class="hero-stats">
+                    <div class="hero-stat"><strong>500+</strong><span>Medicines</span></div>
+                    <div class="hero-stat"><strong>50+</strong><span>Categories</span></div>
+                    <div class="hero-stat"><strong>10k+</strong><span>Happy Customers</span></div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="hero-visual">
+                    <img src="https://images.unsplash.com/photo-1580281657528-560d0c6be23d?auto=format&fit=crop&w=900&q=80" alt="Pharmacy delivery" loading="lazy" />
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="container py-5">
+    <div class="section-header">
+        <div>
+            <h3>Shop by Category</h3>
+            <p>Find medicines for every health need</p>
+        </div>
+        <a href="{% url 'store:medicine_list' %}" class="section-link">View all <i class="fas fa-arrow-right"></i></a>
+    </div>
+    <div class="row g-3 g-md-4">
+        {% for category in categories %}
+            <div class="col-6 col-md-4 col-lg-2">
+                {% include "store/partials/category_card.html" %}
+            </div>
+        {% empty %}
+            <div class="col-12">
+                <div class="alert alert-warning">No categories found.</div>
+            </div>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="bg-soft py-5">
+    <div class="container">
+        <div class="section-header">
+            <div>
+                <h3>Featured Medicines</h3>
+                <p>Hand-picked bestsellers for you</p>
+            </div>
+            <a href="{% url 'store:medicine_list' %}" class="section-link">Browse all <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div class="row g-3 g-md-4">
+            {% for medicine in featured %}
+                <div class="col-6 col-md-4 col-lg-3">
+                    {% include "store/partials/product_card.html" with show_category=True %}
+                </div>
+            {% empty %}
+                <div class="col-12">
+                    <div class="empty-state">
+                        <i class="fas fa-capsules"></i>
+                        <h4>No featured medicines yet</h4>
+                        <p class="text-muted">Check back soon for our top picks.</p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+{% if popular %}
+<section class="container py-5">
+    <div class="section-header">
+        <div>
+            <h3>Popular Right Now</h3>
+            <p>Most ordered medicines this week</p>
+        </div>
+        <a href="{% url 'store:medicine_list' %}?sort=price_asc" class="section-link">See more <i class="fas fa-arrow-right"></i></a>
+    </div>
+    <div class="row g-3 g-md-4">
+        {% for medicine in popular %}
+            <div class="col-6 col-md-4 col-lg-3">
+                {% include "store/partials/product_card.html" with show_category=True %}
+            </div>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+<section class="container py-5 pb-5">
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="bg-white rounded-4 shadow-sm p-4 border">
+                <h3 class="h5 mb-4 fw-bold">Why choose FarmOS?</h3>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <div class="feature-card">
+                            <i class="fas fa-capsules fa-2x"></i>
+                            <h6>Genuine medicines</h6>
+                            <p class="text-muted small mb-0">Only trusted brands and verified suppliers for every order.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="feature-card">
+                            <i class="fas fa-truck-fast fa-2x"></i>
+                            <h6>Fast delivery</h6>
+                            <p class="text-muted small mb-0">Reliable doorstep delivery with real-time order updates.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="feature-card">
+                            <i class="fas fa-whatsapp fa-2x"></i>
+                            <h6>WhatsApp checkout</h6>
+                            <p class="text-muted small mb-0">Place orders instantly via WhatsApp — simple and secure.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="cta-card">
+                <div>
+                    <h4>Ready to order?</h4>
+                    <p class="mb-0 opacity-90">Search medicines, save your address, and checkout with one tap on WhatsApp.</p>
+                </div>
+                <a href="{% url 'store:medicine_list' %}" class="btn btn-light mt-4">Start shopping <i class="fas fa-arrow-right ms-1"></i></a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

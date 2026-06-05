@@ -1,0 +1,126 @@
+{% extends "store/base.html" %}
+{% block title %}{% if query %}{{ query }} - {% endif %}Browse Medicines - FarmOS{% endblock %}
+{% block content %}
+<section class="listing-hero py-4 py-md-5">
+    <div class="container">
+        <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3">
+            <div>
+                <h2>{% if query %}Results for "{{ query }}"{% else %}All Medicines{% endif %}</h2>
+                <p class="text-muted mb-0">Search, filter, and order with fast WhatsApp checkout.</p>
+            </div>
+            <form class="search-form d-flex gap-2 w-100 w-md-auto" style="max-width:420px" action="" method="get">
+                {% if selected_category %}<input type="hidden" name="category" value="{{ selected_category }}" />{% endif %}
+                {% if sort %}<input type="hidden" name="sort" value="{{ sort }}" />{% endif %}
+                <div class="search-input-group flex-fill position-relative">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="search" name="q" class="form-control form-control-lg rounded-pill" value="{{ query }}" placeholder="Search medicines..." />
+                </div>
+                <button class="btn btn-primary btn-lg rounded-pill px-4">Search</button>
+            </form>
+        </div>
+    </div>
+</section>
+
+<section class="container py-4 py-md-5">
+    <div class="row g-4">
+        <aside class="col-lg-3">
+            <div class="filter-card">
+                <h5><i class="fas fa-sliders text-primary"></i> Filters</h5>
+                <form action="" method="get" class="mt-4">
+                    {% if query %}<input type="hidden" name="q" value="{{ query }}" />{% endif %}
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold small">Category</label>
+                        <select class="form-select rounded-3" name="category">
+                            <option value="">All categories</option>
+                            {% for category in categories %}
+                                <option value="{{ category.slug }}" {% if category.slug == selected_category %}selected{% endif %}>{{ category.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold small">Sort by</label>
+                        <select class="form-select rounded-3" name="sort">
+                            <option value="" {% if not sort %}selected{% endif %}>Featured</option>
+                            <option value="price_asc" {% if sort == 'price_asc' %}selected{% endif %}>Price: Low to High</option>
+                            <option value="price_desc" {% if sort == 'price_desc' %}selected{% endif %}>Price: High to Low</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary w-100 rounded-pill">Apply filters</button>
+                    {% if query or selected_category or sort %}
+                        <a href="{% url 'store:medicine_list' %}" class="btn btn-outline-secondary w-100 rounded-pill mt-2">Clear all</a>
+                    {% endif %}
+                </form>
+            </div>
+        </aside>
+
+        <div class="col-lg-9">
+            <div class="results-bar">
+                <div class="results-count">
+                    Showing <strong>{{ medicines|length }}</strong> of <strong>{{ total_count }}</strong> medicine{{ total_count|pluralize }}
+                </div>
+                {% if query or selected_category %}
+                <div class="active-filters">
+                    {% if query %}
+                        <a href="?{% if selected_category %}category={{ selected_category }}&{% endif %}{% if sort %}sort={{ sort }}{% endif %}" class="filter-chip">
+                            "{{ query }}" <i class="fas fa-times"></i>
+                        </a>
+                    {% endif %}
+                    {% if selected_category_name %}
+                        <a href="?{% if query %}q={{ query }}&{% endif %}{% if sort %}sort={{ sort }}{% endif %}" class="filter-chip">
+                            {{ selected_category_name }} <i class="fas fa-times"></i>
+                        </a>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="row g-3 g-md-4">
+                {% for medicine in medicines %}
+                    <div class="col-6 col-md-4 col-xl-3">
+                        {% include "store/partials/product_card.html" with show_category=True %}
+                    </div>
+                {% empty %}
+                    <div class="col-12">
+                        <div class="empty-state">
+                            <i class="fas fa-search"></i>
+                            <h4>No medicines found</h4>
+                            <p class="text-muted">Try adjusting your search or filters to find what you need.</p>
+                            <a href="{% url 'store:medicine_list' %}" class="btn btn-primary rounded-pill mt-2">Browse all medicines</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            {% if medicines.paginator.num_pages > 1 %}
+            <nav aria-label="Pagination" class="mt-5">
+                <ul class="pagination justify-content-center gap-1">
+                    {% if medicines.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link rounded-pill" href="?page={{ medicines.previous_page_number }}&q={{ query }}&category={{ selected_category }}&sort={{ sort }}">
+                                <i class="fas fa-chevron-left"></i> Previous
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled"><span class="page-link rounded-pill">Previous</span></li>
+                    {% endif %}
+                    <li class="page-item disabled">
+                        <span class="page-link rounded-pill border-0 bg-transparent text-muted">
+                            Page {{ medicines.number }} of {{ medicines.paginator.num_pages }}
+                        </span>
+                    </li>
+                    {% if medicines.has_next %}
+                        <li class="page-item">
+                            <a class="page-link rounded-pill" href="?page={{ medicines.next_page_number }}&q={{ query }}&category={{ selected_category }}&sort={{ sort }}">
+                                Next <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled"><span class="page-link rounded-pill">Next</span></li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}
