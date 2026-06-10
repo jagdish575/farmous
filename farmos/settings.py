@@ -9,24 +9,34 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / ".env")
 
 
-def _build_database_url():
-    url = os.getenv("DATABASE_URL", "").strip()
-    if url:
-        return url
+def _clean_env(value):
+    return (value or "").strip().strip('"').strip("'")
 
-    host = os.getenv("NEON_DB_HOST", "").strip() or os.getenv("DJANGO_DB_HOST", "").strip()
-    name = os.getenv("NEON_DB_NAME", "").strip() or os.getenv("DJANGO_DB_NAME", "").strip()
-    user = os.getenv("NEON_DB_USER", "").strip() or os.getenv("DJANGO_DB_USER", "").strip()
-    password = os.getenv("NEON_DB_PASSWORD", "").strip() or os.getenv("DJANGO_DB_PASSWORD", "").strip()
-    if not (host and name and user and password):
+
+def _build_database_url():
+    host = _clean_env(os.getenv("NEON_DB_HOST")) or _clean_env(os.getenv("DJANGO_DB_HOST"))
+    name = _clean_env(os.getenv("NEON_DB_NAME")) or _clean_env(os.getenv("DJANGO_DB_NAME"))
+    user = _clean_env(os.getenv("NEON_DB_USER")) or _clean_env(os.getenv("DJANGO_DB_USER"))
+    password = _clean_env(os.getenv("NEON_DB_PASSWORD")) or _clean_env(os.getenv("DJANGO_DB_PASSWORD"))
+
+    # Prefer separate Neon vars — password is URL-encoded (safe for special characters).
+    if host and name and user and password and password not in ("YOUR_PASSWORD", "change-me"):
+        port = _clean_env(os.getenv("NEON_DB_PORT")) or _clean_env(os.getenv("DJANGO_DB_PORT")) or "5432"
+        sslmode = _clean_env(os.getenv("NEON_DB_SSLMODE")) or "require"
+        return (
+            f"postgresql://{quote_plus(user)}:{quote_plus(password)}"
+            f"@{host}:{port}/{name}?sslmode={sslmode}"
+        )
+
+    url = _clean_env(os.getenv("DATABASE_URL"))
+    if not url or "YOUR_PASSWORD" in url:
         return ""
 
-    port = os.getenv("NEON_DB_PORT", "").strip() or os.getenv("DJANGO_DB_PORT", "5432")
-    sslmode = os.getenv("NEON_DB_SSLMODE", "require")
-    return (
-        f"postgresql://{quote_plus(user)}:{quote_plus(password)}"
-        f"@{host}:{port}/{name}?sslmode={sslmode}"
-    )
+    if url.startswith("postgres://"):
+        url = "postgresql://" + url[len("postgres://") :]
+    if "sslmode=" not in url:
+        url = f"{url}&sslmode=require" if "?" in url else f"{url}?sslmode=require"
+    return url
 
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "replace-this-with-a-secure-secret-key")
 DEBUG = os.getenv("DJANGO_DEBUG", "True").lower() in ("1", "true", "yes")
@@ -86,6 +96,8 @@ if _database_url:
             ssl_require=True,
         )
     }
+    DATABASES["default"].setdefault("OPTIONS", {})
+    DATABASES["default"]["OPTIONS"].setdefault("sslmode", "require")
 else:
     DB_ENGINE = os.getenv("DJANGO_DB_ENGINE")
     if DB_ENGINE:
