@@ -1,14 +1,39 @@
 import os
 from pathlib import Path
+from urllib.parse import quote_plus
 
+import dj_database_url
 from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / ".env")
 
+
+def _build_database_url():
+    url = os.getenv("DATABASE_URL", "").strip()
+    if url:
+        return url
+
+    host = os.getenv("NEON_DB_HOST", "").strip() or os.getenv("DJANGO_DB_HOST", "").strip()
+    name = os.getenv("NEON_DB_NAME", "").strip() or os.getenv("DJANGO_DB_NAME", "").strip()
+    user = os.getenv("NEON_DB_USER", "").strip() or os.getenv("DJANGO_DB_USER", "").strip()
+    password = os.getenv("NEON_DB_PASSWORD", "").strip() or os.getenv("DJANGO_DB_PASSWORD", "").strip()
+    if not (host and name and user and password):
+        return ""
+
+    port = os.getenv("NEON_DB_PORT", "").strip() or os.getenv("DJANGO_DB_PORT", "5432")
+    sslmode = os.getenv("NEON_DB_SSLMODE", "require")
+    return (
+        f"postgresql://{quote_plus(user)}:{quote_plus(password)}"
+        f"@{host}:{port}/{name}?sslmode={sslmode}"
+    )
+
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "replace-this-with-a-secure-secret-key")
 DEBUG = os.getenv("DJANGO_DEBUG", "True").lower() in ("1", "true", "yes")
-ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "*").split(",")
+ALLOWED_HOSTS = [h.strip() for h in os.getenv("DJANGO_ALLOWED_HOSTS", "*").split(",") if h.strip()]
+
+_csrf_origins = os.getenv("DJANGO_CSRF_TRUSTED_ORIGINS", "")
+CSRF_TRUSTED_ORIGINS = [o.strip() for o in _csrf_origins.split(",") if o.strip()]
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -22,6 +47,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -51,25 +77,35 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "farmos.wsgi.application"
 
-DB_ENGINE = os.getenv("DJANGO_DB_ENGINE")
-if DB_ENGINE:
+_database_url = _build_database_url()
+if _database_url:
     DATABASES = {
-        "default": {
-            "ENGINE": DB_ENGINE,
-            "NAME": os.getenv("DJANGO_DB_NAME", "farmos_db"),
-            "USER": os.getenv("DJANGO_DB_USER", "farmos_user"),
-            "PASSWORD": os.getenv("DJANGO_DB_PASSWORD", "password"),
-            "HOST": os.getenv("DJANGO_DB_HOST", "localhost"),
-            "PORT": os.getenv("DJANGO_DB_PORT", "5432"),
-        }
+        "default": dj_database_url.config(
+            default=_database_url,
+            conn_max_age=600,
+            ssl_require=True,
+        )
     }
 else:
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": BASE_DIR / "db.sqlite3",
+    DB_ENGINE = os.getenv("DJANGO_DB_ENGINE")
+    if DB_ENGINE:
+        DATABASES = {
+            "default": {
+                "ENGINE": DB_ENGINE,
+                "NAME": os.getenv("DJANGO_DB_NAME", "farmos_db"),
+                "USER": os.getenv("DJANGO_DB_USER", "farmos_user"),
+                "PASSWORD": os.getenv("DJANGO_DB_PASSWORD", "password"),
+                "HOST": os.getenv("DJANGO_DB_HOST", "localhost"),
+                "PORT": os.getenv("DJANGO_DB_PORT", "5432"),
+            }
         }
-    }
+    else:
+        DATABASES = {
+            "default": {
+                "ENGINE": "django.db.backends.sqlite3",
+                "NAME": BASE_DIR / "db.sqlite3",
+            }
+        }
 
 AUTH_USER_MODEL = "store.User"
 AUTHENTICATION_BACKENDS = [
@@ -88,8 +124,20 @@ USE_L10N = True
 USE_TZ = True
 
 STATIC_URL = "/static/"
-STATICFILES_DIRS = [BASE_DIR / "static"]
+_static_dir = BASE_DIR / "static"
+STATICFILES_DIRS = [_static_dir] if _static_dir.exists() else []
 STATIC_ROOT = BASE_DIR / "staticfiles"
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+    },
+}
+
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
