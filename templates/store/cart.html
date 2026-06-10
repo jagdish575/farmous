@@ -1,11 +1,11 @@
 {% extends "store/base.html" %}
-{% block title %}Cart - FarmOS{% endblock %}
+{% block title %}Cart - Pharmos{% endblock %}
 {% block content %}
 <section class="cart-page py-4 py-md-5">
     <div class="container">
         <div class="mb-4">
             <h2 class="fw-bold">Your cart</h2>
-            <p class="text-muted mb-0">Update quantities instantly and place your order via WhatsApp.</p>
+            <p class="text-muted mb-0">Update quantities and pay securely with Razorpay.</p>
         </div>
 
         {% if cart.items.exists %}
@@ -58,7 +58,9 @@
                                 <strong class="summary-total-amount text-primary">₹{{ cart.total_price|floatformat:2 }}</strong>
                             </div>
                         </div>
-                        <a href="{% url 'store:place_order' %}" class="btn btn-primary w-100 rounded-pill btn-lg">Place Order</a>
+                        <a href="{% url 'store:checkout' %}" class="btn btn-primary w-100 rounded-pill btn-lg">
+                            <i class="fas fa-lock me-1"></i> Pay &amp; Place Order
+                        </a>
                         <a href="{% url 'store:medicine_list' %}" class="btn btn-outline-secondary w-100 rounded-pill mt-2">Continue shopping</a>
                     </div>
                 </div>

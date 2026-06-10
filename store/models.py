@@ -163,10 +163,18 @@ class Order(models.Model):
         ("delivered", "Delivered"),
         ("cancelled", "Cancelled"),
     ]
+    PAYMENT_STATUS_CHOICES = [
+        ("unpaid", "Unpaid"),
+        ("paid", "Paid"),
+        ("failed", "Failed"),
+    ]
     order_id = models.CharField(max_length=30, unique=True, editable=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="orders")
     address = models.ForeignKey(Address, on_delete=models.PROTECT)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")
+    payment_status = models.CharField(max_length=20, choices=PAYMENT_STATUS_CHOICES, default="unpaid")
+    razorpay_order_id = models.CharField(max_length=120, blank=True)
+    razorpay_payment_id = models.CharField(max_length=120, blank=True)
     created_at = models.DateTimeField(default=timezone.now)
 
     class Meta:

@@ -32,7 +32,19 @@ A modern medicine ordering website built with Django 5, PostgreSQL, Bootstrap 5,
 pip install -r requirements.txt
 ```
 
-3. Configure environment variables or edit `farmos/settings.py` for database settings:
+3. Copy environment file and add your secrets:
+
+```bash
+copy .env.example .env
+```
+
+Edit `.env` and set your Twilio credentials:
+
+- `TWILIO_ACCOUNT_SID` — from Twilio Console
+- `TWILIO_AUTH_TOKEN` — your auth token (keep secret, never commit)
+- `TWILIO_VERIFY_SERVICE_SID` — Verify service SID (starts with `VA`)
+
+4. Other optional environment variables:
 
 - `DJANGO_SECRET_KEY`
 - `DJANGO_DEBUG`
@@ -44,19 +56,19 @@ pip install -r requirements.txt
 - `DJANGO_DB_HOST`
 - `DJANGO_DB_PORT`
 
-4. Run migrations:
+5. Run migrations:
 
 ```bash
 python manage.py migrate
 ```
 
-5. Create a superuser:
+6. Create a superuser:
 
 ```bash
 python manage.py createsuperuser
 ```
 
-6. Load medicine data (choose one):
+7. Load medicine data (choose one):
 
 **Kaggle dataset (11,000+ real medicines with photos):**
 

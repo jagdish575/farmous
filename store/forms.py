@@ -15,14 +15,42 @@ STATE_CHOICES = [("", "Select state")] + [(state, state) for state in INDIAN_STA
 class MobileLoginForm(forms.Form):
     mobile_number = forms.CharField(
         label="Mobile Number",
-        widget=forms.TextInput(attrs={"placeholder": "Enter mobile number", "class": "form-control"}),
+        widget=forms.TextInput(attrs={
+            "placeholder": "10-digit mobile number",
+            "class": "form-control form-control-lg",
+            "inputmode": "numeric",
+            "autocomplete": "tel",
+            "maxlength": "10",
+        }),
     )
 
     def clean_mobile_number(self):
+        from .twilio_verify import normalize_indian_mobile, TwilioVerifyError
         mobile = self.cleaned_data["mobile_number"].strip()
-        if not mobile.isdigit() or len(mobile) < 10:
-            raise forms.ValidationError("Enter a valid mobile number.")
-        return mobile
+        try:
+            return normalize_indian_mobile(mobile)
+        except TwilioVerifyError as exc:
+            raise forms.ValidationError(str(exc)) from exc
+
+
+class OtpVerifyForm(forms.Form):
+    otp_code = forms.CharField(
+        label="Verification code",
+        max_length=8,
+        widget=forms.TextInput(attrs={
+            "placeholder": "Enter 6-digit OTP",
+            "class": "form-control form-control-lg text-center otp-input",
+            "inputmode": "numeric",
+            "autocomplete": "one-time-code",
+            "maxlength": "8",
+        }),
+    )
+
+    def clean_otp_code(self):
+        code = self.cleaned_data["otp_code"].strip()
+        if not code.isdigit() or len(code) < 4:
+            raise forms.ValidationError("Enter the verification code sent to your phone.")
+        return code
 
 
 class AddressForm(forms.ModelForm):

@@ -77,17 +77,20 @@ button, input, select, textarea {
     font-weight: 500;
 }
 
-.brand-mark {
-    width: 44px;
-    height: 44px;
-    border-radius: 14px;
-    display: grid;
-    place-items: center;
-    background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
-    color: #fff;
-    font-weight: 800;
-    font-size: 1.1rem;
-    box-shadow: 0 4px 12px rgba(13, 148, 136, 0.35);
+.brand-logo {
+    height: 48px;
+    width: auto;
+    max-width: min(200px, 42vw);
+    object-fit: contain;
+    display: block;
+}
+
+.footer-logo {
+    height: 42px;
+    width: auto;
+    max-width: 180px;
+    object-fit: contain;
+    display: block;
 }
 
 .btn-soft-primary {
@@ -1686,4 +1689,22 @@ html[data-theme="dark"] .product-category-badge {
 html[data-theme="dark"] hr {
     border-color: var(--border);
     opacity: 1;
+}
+
+.otp-input {
+    letter-spacing: 0.35em;
+    font-size: 1.35rem;
+    font-weight: 700;
+}
+
+.login-card .input-group .form-control {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-top-right-radius: 999px !important;
+    border-bottom-right-radius: 999px !important;
+}
+
+.login-card .input-group-text {
+    border-top-left-radius: 999px !important;
+    border-bottom-left-radius: 999px !important;
 }

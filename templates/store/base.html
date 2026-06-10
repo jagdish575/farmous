@@ -11,9 +11,9 @@
     </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{% block title %}FarmOS - Modern Medicine Delivery{% endblock %}</title>
-    <meta name="description" content="Order genuine medicines online. Fast search, smart cart, and instant WhatsApp checkout." />
-    <meta property="og:title" content="FarmOS Medicine Delivery" />
+    <title>{% block title %}Pharmos - Healthy wealthy &amp; wise{% endblock %}</title>
+    <meta name="description" content="Order genuine medicines online with Pharmos. Fast search, smart cart, and secure Razorpay checkout." />
+    <meta property="og:title" content="Pharmos - Online Pharmacy" />
     <meta property="og:description" content="A modern pharmacy experience — search, compare, and order medicines in minutes." />
     <meta property="og:type" content="website" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -28,12 +28,8 @@
     <header class="topbar sticky-top">
         <div class="container-fluid px-3 py-2 py-md-3 d-flex align-items-center justify-content-between gap-3">
             <div class="brand-bar d-flex align-items-center gap-2 gap-md-3">
-                <a class="brand-link d-flex align-items-center gap-2" href="{% url 'store:home' %}">
-                    <div class="brand-mark">F</div>
-                    <div class="d-none d-sm-block">
-                        <h1>FarmOS</h1>
-                        <p>Modern medicine delivery</p>
-                    </div>
+                <a class="brand-link d-flex align-items-center" href="{% url 'store:home' %}">
+                    <img src="{% static 'store/img/pharmos-logo.png' %}" alt="Pharmos — Healthy wealthy &amp; wise" class="brand-logo" width="180" height="48" />
                 </a>
             </div>
             <div class="search-bar-wrapper flex-fill d-none d-md-flex align-items-center mx-3">
@@ -124,7 +120,7 @@
                 </div>
                 <div class="d-flex gap-2">
                     <a href="{% url 'store:cart' %}" class="btn btn-outline-secondary flex-fill rounded-pill">View Cart</a>
-                    <a href="{% url 'store:cart' %}" class="btn btn-primary flex-fill rounded-pill">Checkout</a>
+                    <a href="{% url 'store:checkout' %}" class="btn btn-primary flex-fill rounded-pill">Checkout</a>
                 </div>
             </div>
         </div>
@@ -138,8 +134,8 @@
         <div class="container">
             <div class="row g-4">
                 <div class="col-md-4">
-                    <div class="footer-brand mb-2">FarmOS</div>
-                    <p class="small mb-0">Your trusted online pharmacy. Genuine medicines, fast delivery, and hassle-free WhatsApp ordering.</p>
+                    <img src="{% static 'store/img/pharmos-logo.png' %}" alt="Pharmos" class="footer-logo mb-2" width="160" height="42" />
+                    <p class="small mb-0">Your trusted online pharmacy. Genuine medicines, fast delivery, and secure checkout.</p>
                 </div>
                 <div class="col-md-4">
                     <h6>Quick Links</h6>
@@ -159,7 +155,7 @@
                 </div>
             </div>
             <hr class="border-secondary my-4 opacity-25" />
-            <p class="small text-center mb-0">&copy; 2026 FarmOS. All rights reserved.</p>
+            <p class="small text-center mb-0">&copy; 2026 Pharmos. All rights reserved.</p>
         </div>
     </footer>
 

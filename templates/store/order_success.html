@@ -1,5 +1,5 @@
 {% extends "store/base.html" %}
-{% block title %}Order Placed - FarmOS{% endblock %}
+{% block title %}Order Placed - Pharmos{% endblock %}
 {% block content %}
 <section class="container py-5">
     <div class="row justify-content-center">
@@ -11,7 +11,7 @@
                 <h1 class="h4 fw-bold">Order placed successfully!</h1>
                 <p class="text-muted">Order <strong>{{ order.order_id }}</strong> has been created.</p>
                 {% if whatsapp_url %}
-                    <p class="small text-muted mb-4">WhatsApp should open in a new tab so you can stay on FarmOS. If it didn't open, use the button below.</p>
+                    <p class="small text-muted mb-4">WhatsApp should open in a new tab so you can stay on Pharmos. If it didn't open, use the button below.</p>
                     <a href="{{ whatsapp_url }}" target="_blank" rel="noopener noreferrer" class="btn btn-success rounded-pill px-4 mb-2">
                         <i class="fab fa-whatsapp me-1"></i> Open WhatsApp again
                     </a>

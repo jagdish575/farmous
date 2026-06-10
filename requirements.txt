@@ -3,3 +3,6 @@ psycopg[binary]>=3.2
 gunicorn>=22.0
 kagglehub>=0.3
 pandas>=2.0
+python-dotenv>=1.0
+twilio>=9.0
+razorpay>=1.4

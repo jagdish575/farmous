@@ -1,5 +1,5 @@
 {% extends "store/base.html" %}
-{% block title %}{{ order.order_id }} - FarmOS{% endblock %}
+{% block title %}{{ order.order_id }} - Pharmos{% endblock %}
 {% block content %}
 <section class="container py-4 py-md-5">
     <div class="row g-4">
@@ -58,6 +58,12 @@
                 <div class="d-flex justify-content-between mb-2">
                     <span class="text-muted">Items</span>
                     <strong>{{ order.total_items }}</strong>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted">Payment</span>
+                    <strong class="{% if order.payment_status == 'paid' %}text-success{% else %}text-warning{% endif %}">
+                        {{ order.get_payment_status_display }}
+                    </strong>
                 </div>
                 <div class="d-flex justify-content-between mb-4 fs-5">
                     <span class="fw-semibold">Total</span>

@@ -1,0 +1,77 @@
+{% extends "store/base.html" %}
+{% block title %}Checkout - Pharmos{% endblock %}
+{% block content %}
+<section class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <article class="summary-card rounded-4 p-4 p-md-5 text-center">
+                <div class="mb-3">
+                    <i class="fas fa-credit-card text-primary" style="font-size:2.5rem"></i>
+                </div>
+                <h1 class="h4 fw-bold">Secure checkout</h1>
+                <p class="text-muted">Order <strong>{{ order.order_id }}</strong></p>
+                <div class="d-flex justify-content-between align-items-center p-3 rounded-3 bg-soft mb-4">
+                    <span class="text-muted">Amount to pay</span>
+                    <strong class="fs-4 text-primary">₹{{ order.total_price|floatformat:2 }}</strong>
+                </div>
+                <button id="rzpPayBtn" class="btn btn-primary btn-lg rounded-pill w-100">
+                    <i class="fas fa-lock me-1"></i> Pay with Razorpay
+                </button>
+                <a href="{% url 'store:cart' %}" class="btn btn-outline-secondary rounded-pill w-100 mt-2">Back to cart</a>
+                <p class="text-muted small mt-3 mb-0">Payments are processed securely by Razorpay.</p>
+            </article>
+        </div>
+    </div>
+</section>
+
+<form id="paymentVerifyForm" method="post" action="{% url 'store:payment_verify' %}" class="d-none">
+    {% csrf_token %}
+    <input type="hidden" name="razorpay_order_id" id="razorpay_order_id" />
+    <input type="hidden" name="razorpay_payment_id" id="razorpay_payment_id" />
+    <input type="hidden" name="razorpay_signature" id="razorpay_signature" />
+</form>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const payBtn = document.getElementById('rzpPayBtn');
+    const verifyForm = document.getElementById('paymentVerifyForm');
+
+    const options = {
+        key: '{{ razorpay_key_id|escapejs }}',
+        amount: {{ amount_paise }},
+        currency: 'INR',
+        name: 'Pharmos',
+        description: 'Order {{ order.order_id|escapejs }}',
+        order_id: '{{ order.razorpay_order_id|escapejs }}',
+        prefill: {
+            name: '{{ user_name|escapejs }}',
+            email: '{{ user_email|escapejs }}',
+            contact: '{{ user_phone|escapejs }}',
+        },
+        theme: { color: '#0d9488' },
+        handler: function (response) {
+            document.getElementById('razorpay_order_id').value = response.razorpay_order_id;
+            document.getElementById('razorpay_payment_id').value = response.razorpay_payment_id;
+            document.getElementById('razorpay_signature').value = response.razorpay_signature;
+            verifyForm.submit();
+        },
+        modal: {
+            ondismiss: function () {
+                payBtn.disabled = false;
+                payBtn.innerHTML = '<i class="fas fa-lock me-1"></i> Pay with Razorpay';
+            }
+        }
+    };
+
+    const rzp = new Razorpay(options);
+    payBtn.addEventListener('click', () => {
+        payBtn.disabled = true;
+        payBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Opening payment...';
+        rzp.open();
+    });
+});
+</script>
+{% endblock %}

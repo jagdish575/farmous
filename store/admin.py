@@ -14,8 +14,8 @@ from .models import (
 )
 
 class FarmosAdminSite(AdminSite):
-    site_header = "FarmOS Pharmacy Admin"
-    site_title = "FarmOS Admin"
+    site_header = "Pharmos Pharmacy Admin"
+    site_title = "Pharmos Admin"
     index_title = "Store Dashboard"
     index_template = "admin/dashboard.html"
 
