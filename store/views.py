@@ -1,3 +1,4 @@
+import json
 import urllib.parse
 from django.db import models
 from django.contrib import messages
@@ -10,6 +11,9 @@ from django.urls import reverse
 from .forms import AddressForm, MobileLoginForm, NotificationSettingsForm, ProfileForm
 from .models import (Address, Cart, CartItem, Category, Medicine, Order, OrderItem,
                      SiteSettings)
+from . import recommendations as rec
+from .india_locations import CITIES_BY_STATE, STATE_ALIASES
+from .order_messages import format_cancel_whatsapp_message, format_order_whatsapp_message
 
 User = get_user_model()
 
@@ -45,14 +49,25 @@ def serialize_cart(cart):
         "items": items,
     }
 
+def build_whatsapp_url(message_lines):
+    settings = get_settings()
+    message = urllib.parse.quote("\n".join(message_lines))
+    phone = settings.whatsapp_number.lstrip("+")
+    return f"https://wa.me/{phone}?text={message}"
+
+
 def home(request):
-    categories = Category.objects.all()[:6]
+    categories = Category.objects.all()[:8]
     featured = Medicine.objects.filter(is_active=True, is_featured=True).order_by("name")[:8]
     popular = Medicine.objects.filter(is_active=True).order_by("-stock_quantity", "name")[:8]
     context = {
         "categories": categories,
         "featured": featured,
         "popular": popular,
+        "recently_viewed": rec.get_recently_viewed(request),
+        "keep_shopping": rec.get_keep_shopping_for(request),
+        "browsing_recommendations": rec.get_browsing_recommendations(request),
+        "shop_url": reverse("store:medicine_list"),
     }
     return render(request, "store/home.html", context)
 
@@ -122,7 +137,14 @@ def medicine_list(request):
 
 def medicine_detail(request, slug):
     medicine = get_object_or_404(Medicine, slug=slug, is_active=True)
-    context = {"medicine": medicine}
+    rec.track_product_view(request, medicine)
+    context = {
+        "medicine": medicine,
+        "similar_products": rec.get_similar_products(medicine),
+        "also_viewed": rec.get_customers_also_viewed(medicine, request),
+        "frequently_bought_together": rec.get_frequently_bought_together(medicine),
+        "recently_viewed": rec.get_recently_viewed(request, exclude=medicine.pk),
+    }
     return render(request, "store/medicine_detail.html", context)
 
 @login_required
@@ -209,7 +231,13 @@ def address_form(request, pk=None):
         if address is None:
             form.initial.setdefault("mobile_number", request.user.mobile_number)
             form.initial.setdefault("full_name", request.user.full_name)
-    return render(request, "store/address_form.html", {"form": form, "address": address})
+    context = {
+        "form": form,
+        "address": address,
+        "cities_by_state_json": json.dumps(CITIES_BY_STATE),
+        "state_aliases_json": json.dumps(STATE_ALIASES),
+    }
+    return render(request, "store/address_form.html", context)
 
 @login_required
 def place_order(request):
@@ -233,28 +261,19 @@ def place_order(request):
             price=item.price,
         )
     cart.items.all().delete()
-    settings = get_settings()
-    message_lines = [
-        "Hello,",
-        "\nNEW MEDICINE ORDER\n",
-        f"Order ID: {order.order_id}",
-        f"Customer Name: {request.user.full_name}",
-        f"Mobile Number: {request.user.mobile_number}",
-        "\nDelivery Address:\n",
-        f"{address.address_line}",
-        f"{address.city}",
-        f"{address.state}",
-        f"{address.pincode}\n",
-        "Medicines:\n",
-    ]
-    for item in order.items.all():
-        message_lines.append(f"{item.medicine.name} x {item.quantity}")
-    message_lines.append(f"\nTotal Items: {order.total_items}")
-    message_lines.append("\nPlease confirm availability and delivery.")
-    message_lines.append("\nThank You.")
-    message = urllib.parse.quote("\n".join(message_lines))
-    phone = settings.whatsapp_number.lstrip("+")
-    return redirect(f"https://wa.me/{phone}?text={message}")
+    message_lines = format_order_whatsapp_message(order, address, request.user)
+    request.session["whatsapp_checkout_url"] = build_whatsapp_url(message_lines)
+    return redirect("store:order_success", pk=order.pk)
+
+
+@login_required
+def order_success(request, pk):
+    order = get_object_or_404(Order, pk=pk, user=request.user)
+    whatsapp_url = request.session.pop("whatsapp_checkout_url", None)
+    return render(request, "store/order_success.html", {
+        "order": order,
+        "whatsapp_url": whatsapp_url,
+    })
 
 @login_required
 def order_list(request):
@@ -274,19 +293,10 @@ def cancel_order(request, pk):
         return redirect("store:order_detail", pk=order.pk)
     order.status = "cancelled"
     order.save()
-    settings = get_settings()
-    message_lines = [
-        "Hello,",
-        "\nORDER CANCELLATION REQUEST\n",
-        f"Order ID: {order.order_id}",
-        f"Customer Name: {request.user.full_name}",
-        f"Mobile Number: {request.user.mobile_number}",
-        "\nPlease cancel my order.",
-        "\nThank You.",
-    ]
-    message = urllib.parse.quote("\n".join(message_lines))
-    phone = settings.whatsapp_number.lstrip("+")
-    return redirect(f"https://wa.me/{phone}?text={message}")
+    message_lines = format_cancel_whatsapp_message(order, request.user)
+    request.session["whatsapp_checkout_url"] = build_whatsapp_url(message_lines)
+    messages.success(request, "Order cancelled. WhatsApp will open in a new tab to notify the pharmacy.")
+    return redirect("store:order_success", pk=order.pk)
 
 @login_required
 def profile(request):
@@ -346,3 +356,11 @@ def login_mobile(request):
 def logout_view(request):
     logout(request)
     return redirect("store:home")
+
+
+def page_not_found(request, exception):
+    return render(request, "404.html", status=404)
+
+
+def server_error(request):
+    return render(request, "500.html", status=500)

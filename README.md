@@ -56,25 +56,27 @@ python manage.py migrate
 python manage.py createsuperuser
 ```
 
-6. Load sample data (24 medicines, 8 categories, product photos):
+6. Load medicine data (choose one):
+
+**Kaggle dataset (11,000+ real medicines with photos):**
+
+```bash
+python manage.py import_kaggle_medicines --reset --limit 500
+```
+
+Use `--limit 0` to import all rows (slower).
+
+**Built-in dummy JSON fixture:**
 
 ```bash
 python manage.py load_dummy_data --reset
 ```
 
-Or use the shorter alias:
-
-```bash
-python manage.py seed_store --reset
-```
-
-**Easy-edit JSON** (add your own products/photos): edit `store/data/catalog.json`, then run:
+**Easy-edit JSON:** edit `store/data/catalog.json`, then:
 
 ```bash
 python manage.py load_dummy_data --format catalog --reset
 ```
-
-**Full fixture file** (Django format): `store/fixtures/dummy_data.json`
 
 7. Start the development server:
 

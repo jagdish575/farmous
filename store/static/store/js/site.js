@@ -1,4 +1,27 @@
 document.addEventListener('DOMContentLoaded', () => {
+    /* ── Theme toggle ── */
+    const themeToggle = document.getElementById('themeToggle');
+    const applyTheme = (theme) => {
+        const next = theme === 'dark' ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', next);
+        document.documentElement.setAttribute('data-bs-theme', next);
+        localStorage.setItem('farmos-theme', next);
+        const darkIcon = themeToggle?.querySelector('.theme-icon-dark');
+        const lightIcon = themeToggle?.querySelector('.theme-icon-light');
+        if (darkIcon && lightIcon) {
+            darkIcon.classList.toggle('d-none', next === 'dark');
+            lightIcon.classList.toggle('d-none', next !== 'dark');
+        }
+        themeToggle?.setAttribute('aria-label', next === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+        themeToggle?.setAttribute('title', next === 'dark' ? 'Light mode' : 'Dark mode');
+    };
+
+    applyTheme(document.documentElement.getAttribute('data-theme') || 'light');
+    themeToggle?.addEventListener('click', () => {
+        const current = document.documentElement.getAttribute('data-theme') || 'light';
+        applyTheme(current === 'dark' ? 'light' : 'dark');
+    });
+
     const getCookie = (name) => {
         const value = `; ${document.cookie}`;
         const parts = value.split(`; ${name}=`);

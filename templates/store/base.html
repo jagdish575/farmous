@@ -1,7 +1,14 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light" data-bs-theme="light">
 <head>
+    <script>
+        (function () {
+            var theme = localStorage.getItem('farmos-theme') || 'light';
+            document.documentElement.setAttribute('data-theme', theme);
+            document.documentElement.setAttribute('data-bs-theme', theme);
+        })();
+    </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{% block title %}FarmOS - Modern Medicine Delivery{% endblock %}</title>
@@ -38,6 +45,10 @@
                 </div>
             </div>
             <div class="action-bar d-flex align-items-center gap-2">
+                <button id="themeToggle" class="btn btn-outline-secondary btn-icon theme-toggle-btn" type="button" aria-label="Toggle dark mode" title="Toggle theme">
+                    <i class="fas fa-moon theme-icon-dark"></i>
+                    <i class="fas fa-sun theme-icon-light d-none"></i>
+                </button>
                 <a href="{% url 'store:cart' %}" class="btn btn-outline-primary btn-icon position-relative d-none d-md-inline-flex">
                     <i class="fas fa-shopping-bag"></i>
                     <span class="badge counter" {% if not cart_count %}style="display:none"{% endif %}>{{ cart_count }}</span>

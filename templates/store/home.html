@@ -35,7 +35,8 @@
     </div>
 </section>
 
-<section class="container py-5">
+<section class="product-section">
+    <div class="container py-5">
     <div class="section-header">
         <div>
             <h3>Shop by Category</h3>
@@ -54,10 +55,11 @@
             </div>
         {% endfor %}
     </div>
+    </div>
 </section>
 
-<section class="bg-soft py-5">
-    <div class="container">
+<section class="product-section bg-soft">
+    <div class="container py-5">
         <div class="section-header">
             <div>
                 <h3>Featured Medicines</h3>
@@ -83,8 +85,15 @@
     </div>
 </section>
 
+{% include "store/partials/recommendation_section.html" with medicines=recently_viewed title="Pick up where you left off" subtitle="Recently viewed products" %}
+
+{% include "store/partials/recommendation_section.html" with medicines=keep_shopping title="Keep shopping for" subtitle="From categories you explored" link_url=shop_url section_bg="bg-soft" %}
+
+{% include "store/partials/recommendation_section.html" with medicines=browsing_recommendations title="Based on your browsing history" subtitle="Personalized picks for you" %}
+
 {% if popular %}
-<section class="container py-5">
+<section class="product-section">
+    <div class="container py-5">
     <div class="section-header">
         <div>
             <h3>Popular Right Now</h3>
@@ -99,10 +108,12 @@
             </div>
         {% endfor %}
     </div>
+    </div>
 </section>
 {% endif %}
 
-<section class="container py-5 pb-5">
+<section class="product-section">
+    <div class="container py-5 pb-5">
     <div class="row g-4">
         <div class="col-lg-8">
             <div class="bg-white rounded-4 shadow-sm p-4 border">
@@ -141,6 +152,7 @@
                 <a href="{% url 'store:medicine_list' %}" class="btn btn-light mt-4">Start shopping <i class="fas fa-arrow-right ms-1"></i></a>
             </div>
         </div>
+    </div>
     </div>
 </section>
 {% endblock %}

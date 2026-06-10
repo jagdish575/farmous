@@ -68,4 +68,12 @@
         </div>
     </div>
 </section>
+
+{% include "store/partials/recommendation_section.html" with medicines=frequently_bought_together title="Frequently bought together" subtitle="Customers often order these together" %}
+
+{% include "store/partials/recommendation_section.html" with medicines=also_viewed title="Customers who viewed this item also viewed" subtitle="Popular with shoppers like you" section_bg="bg-soft" %}
+
+{% include "store/partials/recommendation_section.html" with medicines=similar_products title="Related to items you've viewed" subtitle="Similar medicines in this category" %}
+
+{% include "store/partials/recommendation_section.html" with medicines=recently_viewed title="Pick up where you left off" subtitle="Your recently viewed products" %}
 {% endblock %}

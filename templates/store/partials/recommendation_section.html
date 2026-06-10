@@ -1,0 +1,22 @@
+{% if medicines %}
+<section class="product-section {{ section_bg|default:'' }}">
+    <div class="container py-4">
+        <div class="section-header">
+            <div>
+                <h3 class="h5 fw-bold mb-1">{{ title }}</h3>
+                {% if subtitle %}<p class="text-muted small mb-0">{{ subtitle }}</p>{% endif %}
+            </div>
+            {% if link_url %}
+                <a href="{{ link_url }}" class="section-link">{{ link_label|default:"See all" }} <i class="fas fa-arrow-right"></i></a>
+            {% endif %}
+        </div>
+        <div class="row g-3 g-md-4 product-grid-row{% if medicines|length < 4 %} justify-content-start{% endif %}">
+            {% for medicine in medicines %}
+                <div class="col-6 col-sm-6 col-md-4 col-lg-3">
+                    {% include "store/partials/product_card.html" with show_category=True %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}

@@ -190,6 +190,27 @@ class Order(models.Model):
     def total_price(self):
         return sum(item.quantity * item.price for item in self.items.all())
 
+class ProductView(models.Model):
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, null=True, blank=True, related_name="product_views"
+    )
+    session_key = models.CharField(max_length=40, db_index=True)
+    medicine = models.ForeignKey(Medicine, on_delete=models.CASCADE, related_name="views")
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="views")
+    viewed_at = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        ordering = ["-viewed_at"]
+        indexes = [
+            models.Index(fields=["session_key", "viewed_at"]),
+            models.Index(fields=["user", "viewed_at"]),
+            models.Index(fields=["medicine", "viewed_at"]),
+        ]
+
+    def __str__(self):
+        return f"{self.medicine.name} viewed at {self.viewed_at}"
+
+
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="items")
     medicine = models.ForeignKey(Medicine, on_delete=models.PROTECT)

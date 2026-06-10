@@ -1,0 +1,36 @@
+{% extends "store/base.html" %}
+{% block title %}Order Placed - FarmOS{% endblock %}
+{% block content %}
+<section class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+            <article class="profile-card rounded-4 p-4 p-md-5 text-center">
+                <div class="mb-3">
+                    <i class="fas fa-check-circle text-success" style="font-size:3rem"></i>
+                </div>
+                <h1 class="h4 fw-bold">Order placed successfully!</h1>
+                <p class="text-muted">Order <strong>{{ order.order_id }}</strong> has been created.</p>
+                {% if whatsapp_url %}
+                    <p class="small text-muted mb-4">WhatsApp should open in a new tab so you can stay on FarmOS. If it didn't open, use the button below.</p>
+                    <a href="{{ whatsapp_url }}" target="_blank" rel="noopener noreferrer" class="btn btn-success rounded-pill px-4 mb-2">
+                        <i class="fab fa-whatsapp me-1"></i> Open WhatsApp again
+                    </a>
+                {% endif %}
+                <div class="d-flex flex-wrap gap-2 justify-content-center mt-3">
+                    <a href="{% url 'store:order_detail' order.pk %}" class="btn btn-outline-primary rounded-pill">View order</a>
+                    <a href="{% url 'store:medicine_list' %}" class="btn btn-primary rounded-pill">Continue shopping</a>
+                </div>
+            </article>
+        </div>
+    </div>
+</section>
+{% endblock %}
+{% block extra_scripts %}
+{% if whatsapp_url %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    window.open('{{ whatsapp_url|escapejs }}', '_blank', 'noopener,noreferrer');
+});
+</script>
+{% endif %}
+{% endblock %}

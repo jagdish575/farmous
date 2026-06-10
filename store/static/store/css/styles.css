@@ -579,6 +579,29 @@ button, input, select, textarea {
     padding-bottom: 1rem;
 }
 
+.product-section {
+    width: 100%;
+}
+
+.product-section .container {
+    max-width: 1320px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.product-grid-row {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.product-grid-row > [class*="col-"] {
+    display: flex;
+}
+
+.product-grid-row .product-card {
+    width: 100%;
+}
+
 /* ── Hero ── */
 .hero-section {
     position: relative;
@@ -1450,4 +1473,217 @@ button, input, select, textarea {
         visibility: visible !important;
         height: auto !important;
     }
+}
+
+/* ── Theme toggle ── */
+.theme-toggle-btn {
+    transition: background var(--transition), color var(--transition), border-color var(--transition);
+}
+
+.theme-toggle-btn .fa-moon {
+    color: var(--primary-dark);
+}
+
+html[data-theme="dark"] .theme-toggle-btn .fa-sun {
+    color: #fbbf24;
+}
+
+/* ── Dark theme ── */
+html[data-theme="dark"] {
+    color-scheme: dark;
+    --surface: #1e293b;
+    --surface-muted: #0f172a;
+    --surface-strong: #1e3a5f;
+    --border: #334155;
+    --text: #f1f5f9;
+    --muted: #94a3b8;
+    --primary-soft: #134e4a;
+    --success-soft: #064e3b;
+    --danger-soft: #450a0a;
+    --warning-soft: #451a03;
+    --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.35);
+    --shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+    --shadow-lg: 0 24px 48px rgba(0, 0, 0, 0.55);
+}
+
+html[data-theme="dark"] body {
+    background: linear-gradient(180deg, #0f172a 0%, #1e293b 120px, #0f172a 100%);
+    color: var(--text);
+}
+
+html[data-theme="dark"] .topbar {
+    background: rgba(15, 23, 42, 0.95);
+    border-bottom-color: var(--border);
+}
+
+html[data-theme="dark"] .brand-link p,
+html[data-theme="dark"] .text-muted {
+    color: var(--muted) !important;
+}
+
+html[data-theme="dark"] .form-control,
+html[data-theme="dark"] .form-select {
+    background-color: var(--surface-muted);
+    border-color: var(--border);
+    color: var(--text);
+}
+
+html[data-theme="dark"] .form-control:focus,
+html[data-theme="dark"] .form-select:focus {
+    background-color: var(--surface);
+    border-color: var(--primary);
+    color: var(--text);
+}
+
+html[data-theme="dark"] .search-input-group input {
+    background: var(--surface-muted);
+    border-color: var(--border);
+    color: var(--text);
+}
+
+html[data-theme="dark"] .search-dropdown,
+html[data-theme="dark"] .drawer-content,
+html[data-theme="dark"] .drawer-header,
+html[data-theme="dark"] .drawer-body,
+html[data-theme="dark"] .drawer-footer,
+html[data-theme="dark"] .toast-message {
+    background: var(--surface);
+    border-color: var(--border);
+    color: var(--text);
+}
+
+html[data-theme="dark"] .search-dropdown-header,
+html[data-theme="dark"] .search-dropdown-footer,
+html[data-theme="dark"] .drawer-footer {
+    background: var(--surface-muted);
+}
+
+html[data-theme="dark"] .search-dropdown-item:hover,
+html[data-theme="dark"] .search-dropdown-item.active {
+    background: var(--primary-soft);
+}
+
+html[data-theme="dark"] .drawer-backdrop {
+    background: rgba(0, 0, 0, 0.65);
+}
+
+html[data-theme="dark"] .product-card,
+html[data-theme="dark"] .category-card,
+html[data-theme="dark"] .cart-item-card,
+html[data-theme="dark"] .profile-card,
+html[data-theme="dark"] .form-card,
+html[data-theme="dark"] .summary-card,
+html[data-theme="dark"] .filter-card,
+html[data-theme="dark"] .order-summary-card,
+html[data-theme="dark"] .order-items-card,
+html[data-theme="dark"] .address-card,
+html[data-theme="dark"] .order-card,
+html[data-theme="dark"] .feature-card,
+html[data-theme="dark"] .product-details,
+html[data-theme="dark"] .login-card,
+html[data-theme="dark"] .profile-nav {
+    background: var(--surface);
+    border-color: var(--border);
+    color: var(--text);
+}
+
+html[data-theme="dark"] .feature-card,
+html[data-theme="dark"] .bg-soft,
+html[data-theme="dark"] .product-meta,
+html[data-theme="dark"] .address-card-primary {
+    background: var(--surface-muted);
+}
+
+html[data-theme="dark"] .bg-white {
+    background: var(--surface) !important;
+    border-color: var(--border) !important;
+}
+
+html[data-theme="dark"] .bg-soft,
+html[data-theme="dark"] .product-section.bg-soft,
+html[data-theme="dark"] .listing-hero {
+    background: var(--surface-muted) !important;
+}
+
+html[data-theme="dark"] .mobile-bottom-nav {
+    background: rgba(15, 23, 42, 0.96);
+    border-top-color: var(--border);
+}
+
+html[data-theme="dark"] .site-footer {
+    background: #020617;
+}
+
+html[data-theme="dark"] .btn-outline-secondary,
+html[data-theme="dark"] .btn-outline-primary {
+    border-color: var(--border);
+    color: var(--text);
+}
+
+html[data-theme="dark"] .btn-outline-primary:hover {
+    background: var(--primary);
+    color: #fff;
+}
+
+html[data-theme="dark"] .btn-soft-secondary,
+html[data-theme="dark"] .btn-soft-primary {
+    background: var(--surface-muted);
+    border-color: var(--border);
+    color: var(--text);
+}
+
+html[data-theme="dark"] .empty-state {
+    background: var(--surface);
+    border-color: var(--border);
+}
+
+html[data-theme="dark"] .breadcrumb-item a {
+    color: var(--primary);
+}
+
+html[data-theme="dark"] .list-group-item {
+    background: transparent;
+    border-color: var(--border);
+    color: var(--text);
+}
+
+html[data-theme="dark"] .alert-info {
+    background: #1e3a5f;
+    border-color: #2563eb;
+    color: #bfdbfe;
+}
+
+html[data-theme="dark"] .alert-warning {
+    background: #451a03;
+    border-color: #b45309;
+    color: #fde68a;
+}
+
+html[data-theme="dark"] .alert-success {
+    background: #064e3b;
+    border-color: #059669;
+    color: #a7f3d0;
+}
+
+html[data-theme="dark"] .profile-hero {
+    background: linear-gradient(135deg, #134e4a 0%, #1e3a5f 60%, var(--surface) 100%);
+}
+
+html[data-theme="dark"] .profile-readonly {
+    background: var(--surface-muted) !important;
+    color: var(--muted) !important;
+}
+
+html[data-theme="dark"] .hero-section::before {
+    opacity: 0.15;
+}
+
+html[data-theme="dark"] .product-category-badge {
+    background: rgba(30, 41, 59, 0.92);
+    color: #5eead4;
+}
+
+html[data-theme="dark"] hr {
+    border-color: var(--border);
+    opacity: 1;
 }

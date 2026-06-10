@@ -6,7 +6,7 @@ from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 
-from store.models import CartItem, Category, Medicine, OrderItem, SiteSettings
+from store.models import CartItem, Category, Medicine, OrderItem, ProductView, SiteSettings
 
 
 class Command(BaseCommand):
@@ -54,6 +54,7 @@ class Command(BaseCommand):
         self.stdout.write(self.style.WARNING("Removing existing store catalog data..."))
         CartItem.objects.all().delete()
         OrderItem.objects.all().delete()
+        ProductView.objects.all().delete()
         Medicine.objects.all().delete()
         Category.objects.all().delete()
         SiteSettings.objects.all().delete()

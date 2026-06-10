@@ -20,6 +20,7 @@ urlpatterns = [
     path("addresses/<int:pk>/edit/", views.address_form, name="address_edit"),
     path("orders/", views.order_list, name="order_list"),
     path("orders/<int:pk>/", views.order_detail, name="order_detail"),
+    path("orders/<int:pk>/success/", views.order_success, name="order_success"),
     path("orders/place/", views.place_order, name="place_order"),
     path("orders/<int:pk>/cancel/", views.cancel_order, name="cancel_order"),
     path("profile/", views.profile, name="profile"),

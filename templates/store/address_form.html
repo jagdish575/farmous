@@ -1,26 +1,61 @@
 {% extends "store/base.html" %}
 {% block title %}{% if address %}Edit Address{% else %}Add Address{% endif %} - FarmOS{% endblock %}
 {% block content %}
-<section class="container py-5">
+<section class="container py-4 py-md-5">
     <div class="row justify-content-center">
         <div class="col-lg-8">
-            <article class="form-card rounded-4 shadow-sm p-5">
-                <h2 class="mb-4">{% if address %}Edit address{% else %}Add delivery address{% endif %}</h2>
-                <form method="post" class="row g-4">
+            <article class="form-card rounded-4 shadow-sm p-4 p-md-5">
+                <h2 class="h4 fw-bold mb-2">{% if address %}Edit address{% else %}Add delivery address{% endif %}</h2>
+                <p class="text-muted small mb-4">Select your state first, then choose the city. Use GPS to auto-fill details.</p>
+                <form method="post" class="row g-3" id="addressForm" novalidate>
                     {% csrf_token %}
                     {{ form.non_field_errors }}
-                    <div class="col-md-6">{{ form.full_name.label_tag }}{{ form.full_name }}</div>
-                    <div class="col-md-6">{{ form.mobile_number.label_tag }}{{ form.mobile_number }}</div>
-                    <div class="col-12">{{ form.address_line.label_tag }}{{ form.address_line }}</div>
-                    <div class="col-md-6">{{ form.landmark.label_tag }}{{ form.landmark }}</div>
-                    <div class="col-md-6">{{ form.city.label_tag }}{{ form.city }}</div>
-                    <div class="col-md-6">{{ form.state.label_tag }}{{ form.state }}</div>
-                    <div class="col-md-6">{{ form.pincode.label_tag }}{{ form.pincode }}</div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold small">Full name</label>
+                        {{ form.full_name }}
+                        {{ form.full_name.errors }}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold small">Mobile number</label>
+                        {{ form.mobile_number }}
+                        {{ form.mobile_number.errors }}
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label fw-semibold small">Address line</label>
+                        {{ form.address_line }}
+                        {{ form.address_line.errors }}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold small">Landmark</label>
+                        {{ form.landmark }}
+                        {{ form.landmark.errors }}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold small">State</label>
+                        {{ form.state }}
+                        {{ form.state.errors }}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold small">City</label>
+                        {{ form.city }}
+                        {{ form.city.errors }}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold small">Pincode</label>
+                        {{ form.pincode }}
+                        {{ form.pincode.errors }}
+                    </div>
                     {{ form.latitude }}
                     {{ form.longitude }}
-                    <div class="col-12 d-flex flex-column flex-sm-row gap-3 mt-3">
-                        <button class="btn btn-primary rounded-pill" type="submit">Save address</button>
-                        <button class="btn btn-outline-secondary rounded-pill" id="useLocationBtn" type="button">Use current location</button>
+                    <div class="col-12">
+                        <div id="locationStatus" class="small text-muted"></div>
+                    </div>
+                    <div class="col-12 d-flex flex-column flex-sm-row gap-2 mt-2">
+                        <button class="btn btn-primary rounded-pill px-4" type="submit">Save address</button>
+                        <button class="btn btn-outline-primary rounded-pill" id="useLocationBtn" type="button">
+                            <i class="fas fa-location-crosshairs me-1"></i> Use current location
+                        </button>
+                        <a href="{% url 'store:address_list' %}" class="btn btn-outline-secondary rounded-pill">Cancel</a>
                     </div>
                 </form>
             </article>
@@ -30,27 +65,128 @@
 {% endblock %}
 {% block extra_scripts %}
 <script>
-const useLocationButton = document.getElementById('useLocationBtn');
-if (useLocationButton) {
-    useLocationButton.addEventListener('click', () => {
+document.addEventListener('DOMContentLoaded', () => {
+    const citiesByState = {{ cities_by_state_json|safe }};
+    const stateAliases = {{ state_aliases_json|safe }};
+    const stateSelect = document.getElementById('id_state');
+    const citySelect = document.getElementById('id_city');
+    const addressLine = document.getElementById('id_address_line');
+    const landmark = document.getElementById('id_landmark');
+    const pincode = document.getElementById('id_pincode');
+    const latField = document.getElementById('id_latitude');
+    const lonField = document.getElementById('id_longitude');
+    const locationStatus = document.getElementById('locationStatus');
+    const useLocationBtn = document.getElementById('useLocationBtn');
+
+    const normalizeState = (value) => {
+        if (!value) return '';
+        const trimmed = value.trim();
+        if (citiesByState[trimmed]) return trimmed;
+        return stateAliases[trimmed.toLowerCase()] || trimmed;
+    };
+
+    const populateCities = (state, selectedCity = '') => {
+        const cities = citiesByState[state] || [];
+        citySelect.innerHTML = '';
+        const placeholder = document.createElement('option');
+        placeholder.value = '';
+        placeholder.textContent = cities.length ? 'Select city' : 'Select state first';
+        citySelect.appendChild(placeholder);
+        cities.forEach((city) => {
+            const option = document.createElement('option');
+            option.value = city;
+            option.textContent = city;
+            if (city === selectedCity) option.selected = true;
+            citySelect.appendChild(option);
+        });
+        if (selectedCity && !cities.includes(selectedCity)) {
+            const custom = document.createElement('option');
+            custom.value = selectedCity;
+            custom.textContent = selectedCity;
+            custom.selected = true;
+            citySelect.appendChild(custom);
+        }
+        citySelect.disabled = !cities.length;
+    };
+
+    const setStatus = (message, type = 'muted') => {
+        if (!locationStatus) return;
+        locationStatus.className = `small text-${type}`;
+        locationStatus.textContent = message;
+    };
+
+    stateSelect?.addEventListener('change', () => {
+        populateCities(stateSelect.value);
+    });
+
+    if (stateSelect?.value) {
+        populateCities(stateSelect.value, citySelect?.value || '');
+    }
+
+    const matchCity = (state, value) => {
+        const cities = citiesByState[state] || [];
+        if (!value) return '';
+        const lower = value.toLowerCase();
+        return cities.find((city) => city.toLowerCase() === lower) || '';
+    };
+
+    const reverseGeocode = async (lat, lon) => {
+        const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}&addressdetails=1`;
+        const response = await fetch(url, {
+            headers: { 'Accept': 'application/json' },
+        });
+        if (!response.ok) throw new Error('Reverse geocode failed');
+        return response.json();
+    };
+
+    useLocationBtn?.addEventListener('click', async () => {
         if (!navigator.geolocation) {
             alert('Geolocation is not supported by your browser.');
             return;
         }
-        useLocationButton.textContent = 'Locating…';
-        navigator.geolocation.getCurrentPosition((position) => {
-            const latField = document.getElementById('id_latitude');
-            const lonField = document.getElementById('id_longitude');
-            if (latField && lonField) {
-                latField.value = position.coords.latitude.toFixed(6);
-                lonField.value = position.coords.longitude.toFixed(6);
+        useLocationBtn.disabled = true;
+        useLocationBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Locating...';
+        setStatus('Fetching your GPS location...');
+
+        navigator.geolocation.getCurrentPosition(async (position) => {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+            latField.value = lat.toFixed(7);
+            lonField.value = lon.toFixed(7);
+            setStatus('Location found. Filling address details...');
+
+            try {
+                const data = await reverseGeocode(lat, lon);
+                const addr = data.address || {};
+                const road = [addr.house_number, addr.road, addr.neighbourhood, addr.suburb, addr.quarter]
+                    .filter(Boolean)
+                    .join(', ');
+                if (road && addressLine) addressLine.value = road;
+                if (addr.postcode && pincode) pincode.value = String(addr.postcode).slice(0, 6);
+                if ((addr.landmark || addr.amenity) && landmark) {
+                    landmark.value = addr.landmark || addr.amenity || '';
+                }
+
+                const rawState = addr.state || addr.region || '';
+                const state = normalizeState(rawState);
+                if (state && citiesByState[state]) {
+                    stateSelect.value = state;
+                    const rawCity = addr.city || addr.town || addr.village || addr.county || addr.state_district || '';
+                    populateCities(state, matchCity(state, rawCity) || rawCity);
+                }
+                setStatus('Address filled from your location. Please review and save.', 'success');
+                useLocationBtn.innerHTML = '<i class="fas fa-check me-1"></i> Location added';
+            } catch {
+                setStatus('GPS saved. Could not auto-fill address — please complete the form manually.', 'warning');
+                useLocationBtn.innerHTML = '<i class="fas fa-location-crosshairs me-1"></i> Use current location';
             }
-            useLocationButton.textContent = 'Location added';
+            useLocationBtn.disabled = false;
         }, () => {
-            useLocationButton.textContent = 'Use current location';
-            alert('Unable to retrieve your location. Please enter address manually.');
-        });
+            setStatus('Unable to access location. Allow permission or enter address manually.', 'danger');
+            useLocationBtn.disabled = false;
+            useLocationBtn.innerHTML = '<i class="fas fa-location-crosshairs me-1"></i> Use current location';
+        }, { enableHighAccuracy: true, timeout: 15000 });
     });
-}
+});
 </script>
 {% endblock %}
