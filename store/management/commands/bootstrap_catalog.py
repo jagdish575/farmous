@@ -23,9 +23,9 @@ class Command(BaseCommand):
             or (os.getenv("KAGGLE_USERNAME") and os.getenv("KAGGLE_KEY"))
         )
         if has_kaggle:
-            self.stdout.write(self.style.NOTICE("Empty database — importing Kaggle medicine catalog..."))
+            self.stdout.write(self.style.NOTICE("Empty database — importing Indian medicine catalog from Kaggle..."))
             try:
-                call_command("fetch_kaggle_data", stdout=self.stdout)
+                call_command("import_indian_medicines", limit=5000, stdout=self.stdout)
                 return
             except Exception as exc:
                 self.stderr.write(self.style.WARNING(f"Kaggle import failed ({exc}). Falling back to bundled data."))
