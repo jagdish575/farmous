@@ -1,5 +1,4 @@
 from django.core.management.base import BaseCommand
-from django.db import transaction
 
 from store.medicine_images import category_image_url, medicine_image_url
 from store.models import Category, Medicine
@@ -22,30 +21,32 @@ class Command(BaseCommand):
 
         cat_qs = Category.objects.all() if refresh_all else Category.objects.filter(image="")
         cat_updated = 0
-        for category in cat_qs.iterator(chunk_size=BATCH_SIZE):
+        for category in cat_qs.only("id", "name", "image"):
             category.image = category_image_url(category.name)
             category.save(update_fields=["image"])
             cat_updated += 1
         self.stdout.write(self.style.SUCCESS(f"Updated {cat_updated:,} category images."))
 
         med_filter = {} if refresh_all else {"image": ""}
-        med_qs = Medicine.objects.filter(**med_filter).select_related("category")
-        batch = []
+        last_id = 0
         med_updated = 0
 
-        for medicine in med_qs.iterator(chunk_size=BATCH_SIZE):
-            medicine.image = medicine_image_url(medicine.name, medicine.category.slug)
-            batch.append(medicine)
-            if len(batch) >= BATCH_SIZE:
-                with transaction.atomic():
-                    Medicine.objects.bulk_update(batch, ["image"])
-                med_updated += len(batch)
-                self.stdout.write(f"  Updated {med_updated:,} medicine images...")
-                batch = []
+        while True:
+            batch = list(
+                Medicine.objects.filter(id__gt=last_id, **med_filter)
+                .select_related("category")
+                .only("id", "name", "image", "category__slug")
+                .order_by("id")[:BATCH_SIZE]
+            )
+            if not batch:
+                break
 
-        if batch:
-            with transaction.atomic():
-                Medicine.objects.bulk_update(batch, ["image"])
+            for medicine in batch:
+                medicine.image = medicine_image_url(medicine.name, medicine.category.slug)
+
+            Medicine.objects.bulk_update(batch, ["image"])
+            last_id = batch[-1].id
             med_updated += len(batch)
+            self.stdout.write(f"  Updated {med_updated:,} medicine images...")
 
         self.stdout.write(self.style.SUCCESS(f"Updated {med_updated:,} medicine images."))
