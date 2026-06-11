@@ -18,7 +18,10 @@ class Command(BaseCommand):
             self.stdout.write(self.style.NOTICE(f"Catalog already has {count} medicines — skipping seed."))
             return
 
-        has_kaggle = bool(os.getenv("KAGGLE_USERNAME") and os.getenv("KAGGLE_KEY"))
+        has_kaggle = bool(
+            os.getenv("KAGGLE_API_TOKEN")
+            or (os.getenv("KAGGLE_USERNAME") and os.getenv("KAGGLE_KEY"))
+        )
         if has_kaggle:
             self.stdout.write(self.style.NOTICE("Empty database — importing Kaggle medicine catalog..."))
             try:

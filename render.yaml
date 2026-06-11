@@ -18,9 +18,7 @@ services:
         sync: false
       - key: DATABASE_URL
         sync: false
-      - key: KAGGLE_USERNAME
-        sync: false
-      - key: KAGGLE_KEY
+      - key: KAGGLE_API_TOKEN
         sync: false
       - key: NEON_DB_HOST
         sync: false
