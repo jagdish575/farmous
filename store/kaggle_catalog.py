@@ -103,7 +103,7 @@ def import_medicines_dataframe(df, progress_callback=None):
         composition = str(row.get("Composition", "")).strip()
         side_effects = str(row.get("Side_effects", "")).strip()
         manufacturer = str(row.get("Manufacturer", "")).strip()
-            image = str(row.get("Image URL", "")).strip()
+        image = str(row.get("Image URL", "")).strip()
 
         excellent = row.get("Excellent Review %", 0)
         try:

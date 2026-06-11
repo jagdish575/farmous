@@ -76,17 +76,14 @@ def _build_description(row):
     desc = _clean(row.get("medicine_desc"))
     salt = _clean(row.get("salt_composition"))
     side_effects = _clean(row.get("side_effects"))
-    interactions = _clean(row.get("drug_interactions"))
 
     if desc:
-        parts.append(desc)
+        parts.append(desc[:300])
     if salt:
         parts.append(f"Composition: {salt}")
     if side_effects:
-        parts.append(f"Side effects: {side_effects}")
-    if interactions:
-        parts.append(f"Drug interactions: {interactions}")
-    return "\n\n".join(parts)[:4000]
+        parts.append(f"Side effects: {side_effects[:200]}")
+    return "\n\n".join(parts)[:500]
 
 
 def _needs_prescription(category_name, description):

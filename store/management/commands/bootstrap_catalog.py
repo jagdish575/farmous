@@ -25,7 +25,7 @@ class Command(BaseCommand):
         if has_kaggle:
             self.stdout.write(self.style.NOTICE("Empty database — importing Indian medicine catalog from Kaggle..."))
             try:
-                call_command("import_indian_medicines", limit=5000, stdout=self.stdout)
+                call_command("import_indian_medicines", limit=20000, stdout=self.stdout)
                 return
             except Exception as exc:
                 self.stderr.write(self.style.WARNING(f"Kaggle import failed ({exc}). Falling back to bundled data."))
