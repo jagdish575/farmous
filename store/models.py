@@ -69,6 +69,14 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
+    @property
+    def display_image(self):
+        from store.medicine_images import category_image_url
+
+        if self.image:
+            return self.image
+        return category_image_url(self.name)
+
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.name)
@@ -101,6 +109,12 @@ class Medicine(models.Model):
     @property
     def in_stock(self):
         return self.stock_quantity > 0
+
+    @property
+    def display_image(self):
+        from store.medicine_images import resolve_medicine_image
+
+        return resolve_medicine_image(self.image, self.name, self.category.slug)
 
     def get_absolute_url(self):
         return reverse("store:medicine_detail", args=[self.slug])

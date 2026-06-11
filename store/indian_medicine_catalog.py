@@ -7,6 +7,7 @@ from django.db import transaction
 from django.utils.text import slugify
 
 from store.kaggle_catalog import deterministic_price, deterministic_stock, reset_catalog, unique_slug
+from store.medicine_images import category_image_url, medicine_image_url
 from store.models import Category, Medicine
 
 INDIAN_DATASET = "mohneesh7/indian-medicine-data"
@@ -56,10 +57,16 @@ def _category_for_name(name, cache):
     category_name = _clean(name) or "General Health"
     slug = slugify(category_name)[:120] or "general-health"
     if slug not in cache:
-        category, _ = Category.objects.get_or_create(
+        category, created = Category.objects.get_or_create(
             slug=slug,
-            defaults={"name": category_name[:120]},
+            defaults={
+                "name": category_name[:120],
+                "image": category_image_url(category_name),
+            },
         )
+        if not created and not category.image:
+            category.image = category_image_url(category_name)
+            category.save(update_fields=["image"])
         cache[slug] = category
     return cache[slug]
 
@@ -116,7 +123,7 @@ def _row_to_medicine(row, category_cache, existing_slugs):
         slug=slug,
         description=description,
         manufacturer=manufacturer,
-        image="",
+        image=medicine_image_url(name, category.slug),
         price=parse_price(row.get("product_price"), name),
         stock_quantity=deterministic_stock(name),
         prescription_required=_needs_prescription(category.name, description),

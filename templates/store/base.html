@@ -91,7 +91,7 @@
                 {% if cart_items %}
                     {% for item in cart_items %}
                         <div class="drawer-item" data-item-id="{{ item.id }}" data-unit-price="{{ item.price }}">
-                            <div class="drawer-item-image" style="background-image:url('{{ item.medicine.image|default:'https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=200&q=80' }}')"></div>
+                            <div class="drawer-item-image" style="background-image:url('{{ item.medicine.display_image }}')"></div>
                             <div class="drawer-item-details">
                                 <h6>{{ item.medicine.name }}</h6>
                                 <p class="text-muted small mb-1">{{ item.medicine.category.name }}</p>

@@ -7,6 +7,7 @@ import pandas as pd
 from django.db import transaction
 from django.utils.text import slugify
 
+from store.medicine_images import category_image_url, resolve_medicine_image
 from store.models import CartItem, Category, Medicine, OrderItem, ProductView
 
 KAGGLE_DATASET = "singhnavjot2062001/11000-medicine-details"
@@ -102,9 +103,7 @@ def import_medicines_dataframe(df, progress_callback=None):
         composition = str(row.get("Composition", "")).strip()
         side_effects = str(row.get("Side_effects", "")).strip()
         manufacturer = str(row.get("Manufacturer", "")).strip()
-        image = str(row.get("Image URL", "")).strip()
-        if image.lower() in ("nan", "none", ""):
-            image = ""
+            image = str(row.get("Image URL", "")).strip()
 
         excellent = row.get("Excellent Review %", 0)
         try:
@@ -115,10 +114,17 @@ def import_medicines_dataframe(df, progress_callback=None):
         category_name = detect_category(uses)
         category = category_cache.get(category_name)
         if category is None:
-            category, _ = Category.objects.get_or_create(
-                slug=slugify(category_name),
-                defaults={"name": category_name},
+            cat_slug = slugify(category_name)
+            category, created = Category.objects.get_or_create(
+                slug=cat_slug,
+                defaults={
+                    "name": category_name,
+                    "image": category_image_url(category_name),
+                },
             )
+            if not created and not category.image:
+                category.image = category_image_url(category_name)
+                category.save(update_fields=["image"])
             category_cache[category_name] = category
 
         description_parts = []
@@ -131,6 +137,8 @@ def import_medicines_dataframe(df, progress_callback=None):
         description = "\n\n".join(description_parts)
 
         slug = unique_slug(slugify(name), existing_slugs)
+        cat_slug = category.slug
+        image = resolve_medicine_image(image, name, cat_slug)
         prescription_required = any(
             word in uses.lower()
             for word in ("cancer", "diabetes", "heart", "blood pressure", "insulin", "chemotherapy")

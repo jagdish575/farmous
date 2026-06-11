@@ -14,7 +14,7 @@
                     <div class="cart-items-list d-flex flex-column gap-3">
                         {% for item in cart.items.all %}
                             <div class="cart-item-card rounded-4 p-3 p-md-4 d-flex gap-3 gap-md-4" data-item-id="{{ item.id }}" data-unit-price="{{ item.price }}">
-                                <div class="cart-item-image flex-shrink-0" style="background-image:url('{{ item.medicine.image|default:'https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=400&q=80' }}')"></div>
+                                <div class="cart-item-image flex-shrink-0" style="background-image:url('{{ item.medicine.display_image }}')"></div>
                                 <div class="cart-item-meta flex-fill min-w-0">
                                     <div class="d-flex align-items-start justify-content-between gap-2 mb-1">
                                         <h5 class="mb-0 fs-6 fw-bold">{{ item.medicine.name }}</h5>

@@ -13,7 +13,7 @@
         <div class="row g-4">
             <div class="col-lg-6">
                 <div class="product-display overflow-hidden">
-                    <img src="{{ medicine.image|default:'https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=900&q=80' }}" alt="{{ medicine.name }}" class="img-fluid w-100" loading="lazy" style="min-height:360px;object-fit:cover" />
+                    <img src="{{ medicine.display_image }}" alt="{{ medicine.name }}" class="img-fluid w-100" loading="lazy" style="min-height:360px;object-fit:cover" onerror="this.onerror=null;this.src='https://images.pexels.com/photos/159211/headache-pain-pills-medicine-159211.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=900';" />
                 </div>
             </div>
             <div class="col-lg-6">

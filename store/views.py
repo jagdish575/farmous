@@ -30,10 +30,6 @@ def get_cart(user):
     cart, created = Cart.objects.get_or_create(user=user)
     return cart
 
-DEFAULT_MEDICINE_IMAGE = (
-    "https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=200&q=80"
-)
-
 def serialize_cart(cart):
     items = []
     for item in cart.items.select_related("medicine", "medicine__category"):
@@ -41,7 +37,7 @@ def serialize_cart(cart):
             "id": item.id,
             "medicine_name": item.medicine.name,
             "category": item.medicine.category.name,
-            "image": item.medicine.image or DEFAULT_MEDICINE_IMAGE,
+            "image": item.medicine.display_image,
             "price": float(item.price),
             "quantity": item.quantity,
             "item_total": float(item.total_price),
